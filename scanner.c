@@ -181,7 +181,7 @@ int lexicalAnalysis(FILE *file) {
 	int previousState = 0;
 	int lineCount = 1;
 	int lastLineCount = 1;
-	int lexicalError = 0;
+	int lexicalError = 1;
 
 	char currentChar = '\0';
 	char previousChar = '\0';
@@ -190,10 +190,6 @@ int lexicalAnalysis(FILE *file) {
 
 	/* Lexical Analysis */
 	while ((currentChar = fgetc(file)) != EOF) {
-
-		if (lexicalError) {
-			return lexicalError;
-		}
 
 		/* Get new state from DFA table */
 		currentState = getNextDFAstate(dfaTable, currentChar, currentState);
@@ -220,13 +216,12 @@ int lexicalAnalysis(FILE *file) {
 					printf("Linha: %d | Token: %s\n", lineCount, token);
 				}
 				currentState = getNextDFAstate(dfaTable, currentChar, currentState);
-				previousState = currentState;
 			}
 
 			/* Invalid state (Lexical Error) */
 			if (currentState == -1) {
 				printf("(!) ERRO LEXICO: Lexema: %s | Linha: %d", lexem, lineCount);
-				lexicalError = 1;
+				return lexicalError;
 			}
 		}
 
@@ -237,29 +232,25 @@ int lexicalAnalysis(FILE *file) {
 	}
 
 	/* Check last character from file */
-	if (!lexicalError) {
-		currentState = getNextDFAstate(dfaTable, previousChar, currentState);
+	currentState = getNextDFAstate(dfaTable, previousChar, currentState);
+	if (isCommentState(currentState)) {
+		printf("(!) ERRO LEXICO: unterminated string");
+		return lexicalError;
+	}
 
-		if (isCommentState(currentState)) {
-			printf("(!) ERRO LEXICO: unterminated string");
-			lexicalError = 1;
-			return lexicalError;
-		}
+	if (currentState == -1) {
+		printf("(!) ERRO LEXICO: Lexema: %s | Linha: %d", lexem, lineCount);
+		return lexicalError;
+	}
 
-		if (currentState == -1) {
-			printf("(!) ERRO LEXICO: Lexema: %s | Linha: %d", lexem, lineCount);
-			lexicalError = 1;
-			return lexicalError;
-		}
-
-		if (currentState == 0) {
-			int isFinalState = finalStates[previousState];
-			if (isFinalState) {
-				char *token = getToken(previousState);
-				printf("Linha: %d | Token: %s\n", lineCount, token);
-			}
+	if (currentState == 0) {
+		int isFinalState = finalStates[previousState];
+		if (isFinalState) {
+			char *token = getToken(previousState);
+			printf("Linha: %d | Token: %s\n", lineCount, token);
 		}
 	}
 
+	/* Finished Lexical Analysis with no errors */
 	return 0;
 }
