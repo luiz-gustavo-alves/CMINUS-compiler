@@ -1,6 +1,8 @@
 #include "utils.h"
 #include "scanner.h"
 
+#include <ctype.h>
+
 int isSpecialChar(char c) {
 	return (isspace(c) || c == '\n' || c == '\0' || c == '\t');
 }
@@ -179,7 +181,7 @@ int lexicalAnalysis(FILE *file) {
 	int previousState = 0;
 	int lineCount = 1;
 	int lastLineCount = 1;
-	int lexicalError = 1;
+	int lexicalError = 0;
 
 	char currentChar = '\0';
 	char previousChar = '\0';
@@ -188,6 +190,10 @@ int lexicalAnalysis(FILE *file) {
 
 	/* Lexical Analysis */
 	while ((currentChar = fgetc(file)) != EOF) {
+
+		if (lexicalError) {
+			return lexicalError;
+		}
 
 		/* Get new state from DFA table */
 		currentState = getNextDFAstate(dfaTable, currentChar, currentState);
@@ -220,7 +226,7 @@ int lexicalAnalysis(FILE *file) {
 			/* Invalid state (Lexical Error) */
 			if (currentState == -1) {
 				printf("(!) ERRO LEXICO: Lexema: %s | Linha: %d", lexem, lineCount);
-				return lexicalError;
+				lexicalError = 1;
 			}
 		}
 
@@ -230,17 +236,19 @@ int lexicalAnalysis(FILE *file) {
 		}
 	}
 
-	/* Check and validate last character from file */
+	/* Check last character from file */
 	if (!lexicalError) {
 		currentState = getNextDFAstate(dfaTable, previousChar, currentState);
 
 		if (isCommentState(currentState)) {
 			printf("(!) ERRO LEXICO: unterminated string");
+			lexicalError = 1;
 			return lexicalError;
 		}
 
 		if (currentState == -1) {
 			printf("(!) ERRO LEXICO: Lexema: %s | Linha: %d", lexem, lineCount);
+			lexicalError = 1;
 			return lexicalError;
 		}
 
