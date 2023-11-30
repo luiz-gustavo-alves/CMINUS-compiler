@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
 	if (!lexicalError) {
 		printf("\n\n* * * * * FASE (2): ANALISE SINTATICA | GERACAO DA ARVORE SINTATICA: * * * * *\n\n");
 	}
-	
+
 	fclose(file);
 	return 0;
 }
