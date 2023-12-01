@@ -7,12 +7,20 @@ int isSpecialChar(char c) {
 	return (isspace(c) || c == '\n' || c == '\0' || c == '\t');
 }
 
+int isLetterChar(char c) {
+	return (c >= 65 && c <= 90) || (c >= 97 && c <= 122);
+}
+
 int isLetterState(int state) {
-	return (state == 44 && state == 44);
+	return (state == 44);
+}
+
+int isDigitChar(char c) {
+	return (c >= 48 && c <= 57);
 }
 
 int isDigitState(int state) {
-	return (state == 45 && state == 45);
+	return (state == 45);
 }
 
 int isCommentState(int state) {
@@ -20,6 +28,21 @@ int isCommentState(int state) {
 }
 
 int getNextDFAstate(int dfaTable[DFA_STATES_COUNT][DFA_TRANSITIONS_COUNT], char c, int state) {
+
+	/* Check if char is special (whitespace, newline, tab, null terminator) */
+	if (isSpecialChar(c) && !isCommentState(state)) {
+		return 0;
+	}
+
+	/* Check if char is still in letter state */
+	if (isLetterChar(c) && isLetterState(state)) {
+		return dfaTable[state][30];
+	}
+
+	/* Check if char is still in digit state */
+	if (isDigitChar(c) && isDigitState(state)) {
+		return dfaTable[state][31];
+	}
 
 	switch (c) {
 		case 'i': return dfaTable[state][0];
@@ -56,18 +79,13 @@ int getNextDFAstate(int dfaTable[DFA_STATES_COUNT][DFA_TRANSITIONS_COUNT], char 
 	}
 
 	/* Check if char is letter */
-	if ((c >= 65 && c <= 90) || (c >= 97 && c <= 122)) {
+	if (isLetterChar(c)) {
 		return dfaTable[state][30];
 	}
 
 	/* Check if char is digit */
-	if (c >= 48 && c <= 57) {
+	if (isDigitChar(c)) {
 		return dfaTable[state][31];
-	}
-
-	/* Check if char is special (whitespace, newline, tab, null terminator) */
-	if (isSpecialChar(c) && !isCommentState(state)) {
-		return 0;
 	}
 
 	/* Other char */

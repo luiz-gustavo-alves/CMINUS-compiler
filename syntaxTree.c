@@ -3,7 +3,7 @@
 
 int treeSize = 0;
 
-treeNode *createNode() {
+treeNode *createNode(int currentLine) {
 
     treeNode *newNode = (treeNode*) malloc(sizeof(treeNode));
     int i;
@@ -11,33 +11,31 @@ treeNode *createNode() {
         newNode->child[i] = NULL;
     }
     newNode->sibling = NULL;
+    newNode->line = currentLine;
     return newNode;
 }
 
 treeNode *createDeclNode(declType node, int currentLine) {
 
-    treeNode *newNode = createNode();
+    treeNode *newNode = createNode(currentLine);
     newNode->node = decl;
     newNode->subType.decl = node;
-    newNode->line = currentLine;
     return newNode;
 }
 
 treeNode *createStmtNode(stmtType node, int currentLine) {
 
-    treeNode *newNode = createNode();
+    treeNode *newNode = createNode(currentLine);
     newNode->node = stmt;
     newNode->subType.stmt = node;
-    newNode->line = currentLine;
     return newNode;
 }
 
 treeNode *createExpNode(expType node, int currentLine) {
 
-    treeNode *newNode = createNode();
+    treeNode *newNode = createNode(currentLine);
     newNode->node = exp;
     newNode->subType.exp = node;
-    newNode->line = currentLine;
     return newNode;
 }
 
@@ -90,7 +88,7 @@ void printSyntaxTree(treeNode *tree) {
                 default: printf("INVALID STATEMENT \n");
             }
         } else if (tree->node == decl) {
-            
+
 			switch(tree->subType.decl) {
                 case decl_func: printf("Function Declaration: %s\n", tree->key.name); break;
                 case decl_var: printf("Variable Declaration: %s\n", tree->key.name); break;
@@ -99,11 +97,10 @@ void printSyntaxTree(treeNode *tree) {
                     else if(tree->type == Array) printf("int[] \n");
                     else printf("void \n");
                     break;
-                
+
                 default: printf("INVALID DECLARATION \n");
             }
-        } 
-
+        }
         for (i = 0; i < CHILD_MAX_NODES; i++) {
             printSyntaxTree(tree->child[i]);
         }

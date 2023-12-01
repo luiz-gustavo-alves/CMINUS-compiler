@@ -6,6 +6,4 @@
 #include <stdlib.h>
 #include <string.h>
 
-int lexicalAnalysis(FILE *file);
-
 #endif /* UTILS_H */
