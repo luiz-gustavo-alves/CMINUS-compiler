@@ -6,7 +6,6 @@
 
 #define DFA_STATES_COUNT 49
 #define DFA_TRANSITIONS_COUNT 33
-#define BUFFER_MAX_LENGTH 256
 #define TOKEN_MAX_LENGTH 32
 
 static int currentState = 0;
@@ -17,8 +16,8 @@ static int lexicalError = 1;
 
 static char currentChar = '\0';
 static char previousChar = '\0';
-static char lexem[BUFFER_MAX_LENGTH];
 
+char lexem[TOKEN_MAX_LENGTH];
 char tokenID[TOKEN_MAX_LENGTH]; 
 char tokenNUM[TOKEN_MAX_LENGTH];
 char tokenRESERVED[TOKEN_MAX_LENGTH];
@@ -77,10 +76,6 @@ static int dfaTable[DFA_STATES_COUNT][DFA_TRANSITIONS_COUNT] = {
 };
 
 static int finalStates[DFA_STATES_COUNT] = {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-
-static char *tokenNames[1][27] = {
-    {"if", "int", "return", "void", "else", "while", "+", "-", "*", "/", "=", "==", "<", ">", "<=", ">=", "!=", ";", ",", "(", ")", "[", "]", "{", "}", "ID", "NUM"},
-};
 
 void initializeBuffers();
 int getToken(int finalState);

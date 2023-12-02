@@ -3,6 +3,7 @@
 #include "scanner.h"
 
 void initializeBuffers() {
+	memset(lexem, 0, sizeof(TOKEN_MAX_LENGTH));
 	memset(tokenID, 0, sizeof(TOKEN_MAX_LENGTH));
 	memset(tokenNUM, 0, sizeof(TOKEN_MAX_LENGTH));
 	memset(tokenRESERVED, 0, sizeof(TOKEN_MAX_LENGTH));

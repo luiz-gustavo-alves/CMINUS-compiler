@@ -1,5 +1,6 @@
 #include "syntaxTree.h"
 #include "scanner.h"
+#include "token.h"
 #include "utils.h"
 
 int treeSize = 0;
@@ -60,21 +61,7 @@ void printSyntaxTree(treeNode *tree) {
                     break;
 
                 case expOp:
-                    printf("%d\n", tree->key.op);
-                    switch (tree->key.op) {
-                        case plus: printf("+ \n"); break;
-                        case minus: printf("- \n"); break;
-                        case mult: printf("* \n"); break;
-                        case slash: printf("/ \n"); break;
-                        case assign: printf("= \n"); break;
-                        case lt: printf("< \n"); break;
-                        case gt: printf("> \n"); break;
-                        case lte: printf("<= \n"); break;
-                        case gte: printf(">= \n"); break;
-                        case dif: printf("!= \n"); break;
-                        case equal: printf("== \n"); break;
-                        default: printf("INVALID OPERATOR \n"); break;
-                    }
+                    printf("%s \n", tokenNames[0][tree->key.op - 1]);
                     break;
 
                 default: printf("INVALID EXPRESION");
@@ -84,7 +71,7 @@ void printSyntaxTree(treeNode *tree) {
 			switch (tree->subType.stmt) {
                 case stmtIf: printf("if \n"); break;
                 case stmtWhile: printf("while \n"); break;
-                case stmtAttrib: printf("assign \n"); break;
+                case stmtAttrib: printf("= \n"); break;
                 case stmtReturn: printf("return \n"); break;
                 case stmtFunc: printf("Function Call: %s\n", tree->key.name); break;
                 default: printf("INVALID STATEMENT \n");

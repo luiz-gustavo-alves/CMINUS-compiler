@@ -118,12 +118,12 @@ int getToken(int finalState) {
 	}
 
 	switch (finalState) {
-		case 2: strncpy(tokenRESERVED, "IF", TOKEN_MAX_LENGTH); return TOKEN_IF;
-		case 4: strncpy(tokenRESERVED, "INT", TOKEN_MAX_LENGTH); return TOKEN_INT;
-		case 10: strncpy(tokenRESERVED, "RETURN", TOKEN_MAX_LENGTH); return TOKEN_RETURN;
-		case 14: strncpy(tokenRESERVED, "VOID", TOKEN_MAX_LENGTH); return TOKEN_VOID;
-		case 18: strncpy(tokenRESERVED, "ELSE", TOKEN_MAX_LENGTH); return TOKEN_ELSE;
-		case 23: strncpy(tokenRESERVED, "WHILE", TOKEN_MAX_LENGTH); return TOKEN_WHILE;
+		case 2: strncpy(tokenSYMBOL, "IF", TOKEN_MAX_LENGTH); return TOKEN_IF;
+		case 4: strncpy(tokenSYMBOL, "INT", TOKEN_MAX_LENGTH); return TOKEN_INT;
+		case 10: strncpy(tokenSYMBOL, "RETURN", TOKEN_MAX_LENGTH); return TOKEN_RETURN;
+		case 14: strncpy(tokenSYMBOL, "VOID", TOKEN_MAX_LENGTH); return TOKEN_VOID;
+		case 18: strncpy(tokenSYMBOL, "ELSE", TOKEN_MAX_LENGTH); return TOKEN_ELSE;
+		case 23: strncpy(tokenSYMBOL, "WHILE", TOKEN_MAX_LENGTH); return TOKEN_WHILE;
 		case 24: strncpy(tokenSYMBOL, "+", TOKEN_MAX_LENGTH); return TOKEN_PLUS;
 		case 25: strncpy(tokenSYMBOL, "-", TOKEN_MAX_LENGTH); return TOKEN_MINUS;
 		case 26: strncpy(tokenSYMBOL, "*", TOKEN_MAX_LENGTH); return TOKEN_MULT;
@@ -149,7 +149,6 @@ int getToken(int finalState) {
 
 token lexicalAnalysis() {
 
-	memset(lexem, 0, sizeof(lexem));
 	struct token errTk = {0};
 
 	/* Lexical Analysis */
@@ -157,23 +156,21 @@ token lexicalAnalysis() {
 
 		/* Get new state from DFA table */
 		currentState = getNextDFAstate(dfaTable, currentChar, currentState);
+		strncpy(&previousChar, &currentChar, 1);
 
 		if (currentChar == '\n') {
 			lineCount++;
 		}
 
-		/* Concat Lexem String */
-		if (!isSpecialChar(currentChar)) {
-			strncat(lexem, &currentChar, 1);
-			lastLineCount = lineCount;
-		}
-		else {
-			memset(lexem, 0, sizeof(lexem));
-		}
-
 		/* Ignore comments */
 		int isComment = isCommentState(currentState);
 		if (!isComment) {
+
+			/* Concat Lexem String */
+			if ((isLetterChar(currentChar) || isDigitChar(currentChar))) {
+				strncat(lexem, &currentChar, 1);
+				lastLineCount = lineCount;
+			} 
 
 			/* Check if previous state is a Final State */
 			if (currentState == 0) {
@@ -181,11 +178,30 @@ token lexicalAnalysis() {
 				if (isFinalState)
 				{
 					int token = getToken(previousState);
-					printf("Linha: %d | Lexem: %s\n", lineCount, tokenNames[0][token - 1]);
 					currentState = getNextDFAstate(dfaTable, currentChar, currentState);
 					previousState = currentState;
 
-					struct token tk = { .type = token, .line = lineCount, .name = lexem };
+					struct token tk;
+					tk.type = token;
+					tk.line = lineCount;
+
+					if (token == TOKEN_IDENTIFIER) {
+						printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][token - 1], tokenID);
+						tk.name = tokenID;
+					}
+					else if (token == TOKEN_NUMBER) {
+						printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][token - 1], tokenNUM);
+						tk.name = tokenNUM;
+					}
+					else {
+						printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][token - 1], tokenNames[0][token - 1]);
+						tk.name = tokenSYMBOL;
+					}
+
+					if (!(isLetterChar(currentChar) || isDigitChar(currentChar))) {
+						memset(lexem, 0, sizeof(TOKEN_MAX_LENGTH));
+					}
+					
 					return tk;
 				}
 			}
@@ -196,7 +212,6 @@ token lexicalAnalysis() {
 				return errTk;
 			}
 		}
-
 		previousState = currentState;
 	}
 
@@ -216,9 +231,26 @@ token lexicalAnalysis() {
 		int isFinalState = finalStates[previousState];
 		if (isFinalState) {
 			int token = getToken(previousState);
-			printf("Linha: %d | Token: %s\n", lineCount, lexem);
-			struct token tk = { .type = token, .line = lineCount, .name = lexem };
+			struct token tk;
+			tk.type = token;
+			tk.line = lineCount;
+
+			if (token == TOKEN_IDENTIFIER) {
+				printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][token - 1], tokenID);
+				tk.name = tokenID;
+			}
+			else if (token == TOKEN_NUMBER) {
+				printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][token - 1], tokenNUM);
+				tk.name = tokenNUM;
+			}
+			else {
+				printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][token - 1], tokenNames[0][token - 1]);
+				tk.name = tokenSYMBOL;
+			}
+
 			return tk;
 		}
 	}
+
+	return errTk;
 }

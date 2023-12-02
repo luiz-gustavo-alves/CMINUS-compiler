@@ -5,9 +5,9 @@
   #include "syntaxTree.h"
   #include "parserHelper.h"
 
-  char expName[BUFFER_MAX_LENGTH]; 
-  char variableName[BUFFER_MAX_LENGTH]; 
-  char functionName[BUFFER_MAX_LENGTH];
+  char expName[TOKEN_MAX_LENGTH]; 
+  char variableName[TOKEN_MAX_LENGTH]; 
+  char functionName[TOKEN_MAX_LENGTH];
 
   int currentLine = 1;
   int functionCurrentLine = 1;
@@ -17,33 +17,33 @@
   treeNode *tree;
 %}
 
-%token IF 257
-%token INT 258
-%token RETURN 259
-%token VOID 260
-%token ELSE 261
-%token WHILE 262
-%token PLUS 263
-%token MINUS 264
-%token MULT 265
-%token SLASH 266
-%token ASSIGN 267
-%token EQUAL 268
-%token LT 269
-%token GT 270
-%token LTE 271
-%token GTE 272
-%token DIF 273
-%token SEMICOLON 274
-%token COMMA 275
-%token OPARENT 276
-%token CPARENT 277
-%token OBRACKET 278
-%token CBRACKET 279
-%token OKEY 280
-%token CKEY 281
-%token IDENTIFIER 282
-%token NUMBER 283
+%token IF 1
+%token INT 2
+%token RETURN 3
+%token VOID 4
+%token ELSE 5
+%token WHILE 6
+%token PLUS 7
+%token MINUS 8
+%token MULT 9
+%token SLASH 10
+%token ASSIGN 11
+%token EQUAL 12
+%token LT 13
+%token GT 14
+%token LTE 15
+%token GTE 16
+%token DIF 17
+%token SEMICOLON 18
+%token COMMA 19
+%token OPARENT 20
+%token CPARENT 21
+%token OBRACKET 22
+%token CBRACKET 23
+%token OKEY 24
+%token CKEY 25
+%token IDENTIFIER 26
+%token NUMBER 27
 
 %start program
 
@@ -67,7 +67,7 @@ var_decl : exp_type IDENTIFIER {
                 strncpy(expName , tokenID, sizeof(tokenID + 1));
                 currentLine = lineCount;
               }
-              SEMICOLON {		
+              SEMICOLON {
                 $$ = $1;
                 YYSTYPE declNode = createDeclNode(declVar);
                 declNode->key.name = expName;
@@ -376,7 +376,7 @@ int yylex() {
     return YYEOF;
   }
 
-  return tk.type + 256;
+  return tk.type;
 }
 
 treeNode *parse() { 

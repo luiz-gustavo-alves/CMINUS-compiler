@@ -35,4 +35,14 @@ typedef struct token {
 #define TOKEN_IDENTIFIER 26
 #define TOKEN_NUMBER 27
 
+static char *tokens[1][27] = {
+};
+
+static char *tokenNames[2][27] = {
+  {"if", "int", "return", "void", "else", "while", "+", "-", "*", "/", "=", "==", "<", ">", "<=", ">=", "!=", ";", ",", "(", ")", "[", "]", "{", "}", "ID", "NUM"},
+  {"IF", "INT", "RETURN", "VOID", "ELSE", "WHILE", "PLUS", "MINUS", "PLUS", "SLASH", "ASSIGN", "EQUAL", "LT", "GT", "LTE", "GTE", "DIF", "SEMICOLON", "COMMA", "OPARENT", "CPARENT", "OBRACKET", "CBRACKET", "OKEY", "CKEY", "IDENTIFIER", "NUMBER"},
+};
+
+
+
 #endif

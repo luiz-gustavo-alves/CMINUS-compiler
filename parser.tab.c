@@ -74,9 +74,9 @@
   #include "syntaxTree.h"
   #include "parserHelper.h"
 
-  char expName[BUFFER_MAX_LENGTH]; 
-  char variableName[BUFFER_MAX_LENGTH]; 
-  char functionName[BUFFER_MAX_LENGTH];
+  char expName[TOKEN_MAX_LENGTH]; 
+  char variableName[TOKEN_MAX_LENGTH]; 
+  char functionName[TOKEN_MAX_LENGTH];
 
   int currentLine = 1;
   int functionCurrentLine = 1;
@@ -133,33 +133,33 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    IF = 257,
-    INT = 258,
-    RETURN = 259,
-    VOID = 260,
-    ELSE = 261,
-    WHILE = 262,
-    PLUS = 263,
-    MINUS = 264,
-    MULT = 265,
-    SLASH = 266,
-    ASSIGN = 267,
-    EQUAL = 268,
-    LT = 269,
-    GT = 270,
-    LTE = 271,
-    GTE = 272,
-    DIF = 273,
-    SEMICOLON = 274,
-    COMMA = 275,
-    OPARENT = 276,
-    CPARENT = 277,
-    OBRACKET = 278,
-    CBRACKET = 279,
-    OKEY = 280,
-    CKEY = 281,
-    IDENTIFIER = 282,
-    NUMBER = 283
+    IF = 1,
+    INT = 2,
+    RETURN = 3,
+    VOID = 4,
+    ELSE = 5,
+    WHILE = 6,
+    PLUS = 7,
+    MINUS = 8,
+    MULT = 9,
+    SLASH = 10,
+    ASSIGN = 11,
+    EQUAL = 12,
+    LT = 13,
+    GT = 14,
+    LTE = 15,
+    GTE = 16,
+    DIF = 17,
+    SEMICOLON = 18,
+    COMMA = 19,
+    OPARENT = 20,
+    CPARENT = 21,
+    OBRACKET = 22,
+    CBRACKET = 23,
+    OKEY = 24,
+    CKEY = 25,
+    IDENTIFIER = 26,
+    NUMBER = 27
   };
 #endif
 
@@ -493,7 +493,7 @@ union yyalloc
 #define YYNSTATES  109
 
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   284
+#define YYMAXUTOK   257
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -505,7 +505,9 @@ union yyalloc
    as returned by yylex.  */
 static const yytype_int8 yytranslate[] =
 {
-       0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       0,     3,     4,     5,     6,     7,     8,     9,    10,    11,
+      12,    13,    14,    15,    16,    17,    18,    19,    20,    21,
+      22,    23,    24,    25,    26,    27,    28,    29,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -528,12 +530,7 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     1,     3,     4,     5,
-       6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
-      16,    17,    18,    19,    20,    21,    22,    23,    24,    25,
-      26,    27,    28,    29,     2
+       2,     2,     2,     2,     2,     2,     1,     2
 };
 
 #if YYDEBUG
@@ -574,9 +571,9 @@ static const char *const yytname[] =
    (internal) symbol number NUM (which must be that of a token).  */
 static const yytype_int16 yytoknum[] =
 {
-       0,   256,   284,   257,   258,   259,   260,   261,   262,   263,
-     264,   265,   266,   267,   268,   269,   270,   271,   272,   273,
-     274,   275,   276,   277,   278,   279,   280,   281,   282,   283
+       0,   256,   257,     1,     2,     3,     4,     5,     6,     7,
+       8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
+      18,    19,    20,    21,    22,    23,    24,    25,    26,    27
 };
 # endif
 
@@ -1416,7 +1413,7 @@ yyreduce:
   case 2:
 #line 51 "parser.y"
                     { tree = yyvsp[0]; }
-#line 1420 "parser.tab.c"
+#line 1417 "parser.tab.c"
     break;
 
   case 3:
@@ -1430,25 +1427,25 @@ yyreduce:
                   }
                   else yyval = yyvsp[0];
                 }
-#line 1434 "parser.tab.c"
+#line 1431 "parser.tab.c"
     break;
 
   case 4:
 #line 62 "parser.y"
                        { yyval = yyvsp[0]; }
-#line 1440 "parser.tab.c"
+#line 1437 "parser.tab.c"
     break;
 
   case 5:
 #line 64 "parser.y"
                 { yyval = yyvsp[0]; }
-#line 1446 "parser.tab.c"
+#line 1443 "parser.tab.c"
     break;
 
   case 6:
 #line 64 "parser.y"
                                          { yyval = yyvsp[0]; }
-#line 1452 "parser.tab.c"
+#line 1449 "parser.tab.c"
     break;
 
   case 7:
@@ -1457,12 +1454,12 @@ yyreduce:
                 strncpy(expName , tokenID, sizeof(tokenID + 1));
                 currentLine = lineCount;
               }
-#line 1461 "parser.tab.c"
+#line 1458 "parser.tab.c"
     break;
 
   case 8:
 #line 70 "parser.y"
-                        {		
+                        {
                 yyval = yyvsp[-3];
                 YYSTYPE declNode = createDeclNode(declVar);
                 declNode->key.name = expName;
@@ -1470,7 +1467,7 @@ yyreduce:
                 declNode->type = yyvsp[-3]->type;
                 yyval->child[0] = declNode;
               }
-#line 1474 "parser.tab.c"
+#line 1471 "parser.tab.c"
     break;
 
   case 9:
@@ -1479,7 +1476,7 @@ yyreduce:
                 strncpy(expName , tokenID, sizeof(tokenID + 1));
                 currentLine = lineCount;
               }
-#line 1483 "parser.tab.c"
+#line 1480 "parser.tab.c"
     break;
 
   case 10:
@@ -1499,7 +1496,7 @@ yyreduce:
                   else declNode->type = Void;            
                   yyval->child[0] = declNode;
                 }
-#line 1503 "parser.tab.c"
+#line 1500 "parser.tab.c"
     break;
 
   case 11:
@@ -1508,7 +1505,7 @@ yyreduce:
               yyval = createDeclNode(declIdType); 
               yyval->type = Integer;
             }
-#line 1512 "parser.tab.c"
+#line 1509 "parser.tab.c"
     break;
 
   case 12:
@@ -1517,7 +1514,7 @@ yyreduce:
               yyval = createDeclNode(declIdType); 
               yyval->type = Void; 
             }
-#line 1521 "parser.tab.c"
+#line 1518 "parser.tab.c"
     break;
 
   case 13:
@@ -1526,7 +1523,7 @@ yyreduce:
                 strncpy(functionName, tokenID, sizeof(tokenID + 1));
                 functionCurrentLine = lineCount;
               }
-#line 1530 "parser.tab.c"
+#line 1527 "parser.tab.c"
     break;
 
   case 14:
@@ -1542,13 +1539,13 @@ yyreduce:
                 declNode->type = yyvsp[-6]->type;                
                 yyval->child[0] = declNode;
               }
-#line 1546 "parser.tab.c"
+#line 1543 "parser.tab.c"
     break;
 
   case 15:
 #line 123 "parser.y"
                      { yyval = yyvsp[0]; }
-#line 1552 "parser.tab.c"
+#line 1549 "parser.tab.c"
     break;
 
   case 16:
@@ -1558,7 +1555,7 @@ yyreduce:
 			      yyval->key.name = "void"; 
 			      yyval->type = Void; 
 		      }
-#line 1562 "parser.tab.c"
+#line 1559 "parser.tab.c"
     break;
 
   case 17:
@@ -1572,13 +1569,13 @@ yyreduce:
                 }
                 else yyval = yyvsp[0];
               }
-#line 1576 "parser.tab.c"
+#line 1573 "parser.tab.c"
     break;
 
   case 18:
 #line 139 "parser.y"
                                       { yyval = yyvsp[0]; }
-#line 1582 "parser.tab.c"
+#line 1579 "parser.tab.c"
     break;
 
   case 19:
@@ -1596,7 +1593,7 @@ yyreduce:
             
             yyval->child[0] = declNode;
           }
-#line 1600 "parser.tab.c"
+#line 1597 "parser.tab.c"
     break;
 
   case 20:
@@ -1605,7 +1602,7 @@ yyreduce:
             strncpy(expName, tokenID, sizeof(tokenID + 1));
             currentLine = lineCount;
           }
-#line 1609 "parser.tab.c"
+#line 1606 "parser.tab.c"
     break;
 
   case 21:
@@ -1621,7 +1618,7 @@ yyreduce:
             else declNode->type = yyvsp[-4]->type;
             yyval->child[0] = declNode;
           }
-#line 1625 "parser.tab.c"
+#line 1622 "parser.tab.c"
     break;
 
   case 22:
@@ -1635,7 +1632,7 @@ yyreduce:
               }
               else yyval = yyvsp[-1];
             }
-#line 1639 "parser.tab.c"
+#line 1636 "parser.tab.c"
     break;
 
   case 23:
@@ -1649,13 +1646,13 @@ yyreduce:
                   }
                   else yyval = yyvsp[0];
                 }
-#line 1653 "parser.tab.c"
+#line 1650 "parser.tab.c"
     break;
 
   case 24:
 #line 188 "parser.y"
                                           { yyval = NULL; }
-#line 1659 "parser.tab.c"
+#line 1656 "parser.tab.c"
     break;
 
   case 25:
@@ -1669,55 +1666,55 @@ yyreduce:
               }
               else yyval = yyvsp[0];
             }
-#line 1673 "parser.tab.c"
+#line 1670 "parser.tab.c"
     break;
 
   case 26:
 #line 199 "parser.y"
                                       { yyval = NULL; }
-#line 1679 "parser.tab.c"
+#line 1676 "parser.tab.c"
     break;
 
   case 27:
 #line 201 "parser.y"
                     { yyval = yyvsp[0]; }
-#line 1685 "parser.tab.c"
+#line 1682 "parser.tab.c"
     break;
 
   case 28:
 #line 202 "parser.y"
                     { yyval = yyvsp[0]; }
-#line 1691 "parser.tab.c"
+#line 1688 "parser.tab.c"
     break;
 
   case 29:
 #line 203 "parser.y"
                     { yyval = yyvsp[0]; }
-#line 1697 "parser.tab.c"
+#line 1694 "parser.tab.c"
     break;
 
   case 30:
 #line 204 "parser.y"
                     { yyval = yyvsp[0]; }
-#line 1703 "parser.tab.c"
+#line 1700 "parser.tab.c"
     break;
 
   case 31:
 #line 205 "parser.y"
                     { yyval = yyvsp[0]; }
-#line 1709 "parser.tab.c"
+#line 1706 "parser.tab.c"
     break;
 
   case 32:
 #line 207 "parser.y"
                          { yyval = yyvsp[-1]; }
-#line 1715 "parser.tab.c"
+#line 1712 "parser.tab.c"
     break;
 
   case 33:
 #line 207 "parser.y"
                                                   { yyval = NULL; }
-#line 1721 "parser.tab.c"
+#line 1718 "parser.tab.c"
     break;
 
   case 34:
@@ -1727,7 +1724,7 @@ yyreduce:
                 yyval->child[0] = yyvsp[-2];
                 yyval->child[1] = yyvsp[0];
               }
-#line 1731 "parser.tab.c"
+#line 1728 "parser.tab.c"
     break;
 
   case 35:
@@ -1738,7 +1735,7 @@ yyreduce:
                 yyval->child[1] = yyvsp[-2];
                 yyval->child[2] = yyvsp[0];
               }
-#line 1742 "parser.tab.c"
+#line 1739 "parser.tab.c"
     break;
 
   case 36:
@@ -1748,7 +1745,7 @@ yyreduce:
               yyval->child[0] = yyvsp[-2];
               yyval->child[1] = yyvsp[0];
             }
-#line 1752 "parser.tab.c"
+#line 1749 "parser.tab.c"
     break;
 
   case 37:
@@ -1756,7 +1753,7 @@ yyreduce:
                                { 
                 yyval = createStmtNode(stmtReturn);
               }
-#line 1760 "parser.tab.c"
+#line 1757 "parser.tab.c"
     break;
 
   case 38:
@@ -1765,7 +1762,7 @@ yyreduce:
                 yyval = createStmtNode(stmtReturn);
                 yyval->child[0] = yyvsp[-1];
               }
-#line 1769 "parser.tab.c"
+#line 1766 "parser.tab.c"
     break;
 
   case 39:
@@ -1777,13 +1774,13 @@ yyreduce:
               yyval->type = Integer;
               yyval->key.op = ASSIGN; 
             }
-#line 1781 "parser.tab.c"
+#line 1778 "parser.tab.c"
     break;
 
   case 40:
 #line 242 "parser.y"
                          { yyval = yyvsp[0]; }
-#line 1787 "parser.tab.c"
+#line 1784 "parser.tab.c"
     break;
 
   case 41:
@@ -1797,7 +1794,7 @@ yyreduce:
         yyval->line = currentLine;
         yyval->type = Void;
       }
-#line 1801 "parser.tab.c"
+#line 1798 "parser.tab.c"
     break;
 
   case 42:
@@ -1806,7 +1803,7 @@ yyreduce:
         strncpy(variableName, tokenID, sizeof(tokenID + 1));
         currentLine = lineCount;
       }
-#line 1810 "parser.tab.c"
+#line 1807 "parser.tab.c"
     break;
 
   case 43:
@@ -1818,7 +1815,7 @@ yyreduce:
         yyval->child[0] = yyvsp[-1];
         yyval->type = Integer; 
       }
-#line 1822 "parser.tab.c"
+#line 1819 "parser.tab.c"
     break;
 
   case 44:
@@ -1829,13 +1826,13 @@ yyreduce:
                 yyval->child[1] = yyvsp[0];
                 yyval->key.op = yyvsp[-1]->key.op; 
               }
-#line 1833 "parser.tab.c"
+#line 1830 "parser.tab.c"
     break;
 
   case 45:
 #line 271 "parser.y"
                                                 { yyval = yyvsp[0]; }
-#line 1839 "parser.tab.c"
+#line 1836 "parser.tab.c"
     break;
 
   case 46:
@@ -1844,7 +1841,7 @@ yyreduce:
               yyval = createExpNode(expId); 
               yyval->key.op = LTE; 
             }
-#line 1848 "parser.tab.c"
+#line 1845 "parser.tab.c"
     break;
 
   case 47:
@@ -1853,7 +1850,7 @@ yyreduce:
               yyval = createExpNode(expId); 
               yyval->key.op = LT; 
             }
-#line 1857 "parser.tab.c"
+#line 1854 "parser.tab.c"
     break;
 
   case 48:
@@ -1862,7 +1859,7 @@ yyreduce:
               yyval = createExpNode(expId); 
               yyval->key.op = GT; 
             }
-#line 1866 "parser.tab.c"
+#line 1863 "parser.tab.c"
     break;
 
   case 49:
@@ -1871,7 +1868,7 @@ yyreduce:
               yyval = createExpNode(expId); 
               yyval->key.op = GTE; 
             }
-#line 1875 "parser.tab.c"
+#line 1872 "parser.tab.c"
     break;
 
   case 50:
@@ -1880,7 +1877,7 @@ yyreduce:
               yyval = createExpNode(expId); 
               yyval->key.op = EQUAL; 
             }
-#line 1884 "parser.tab.c"
+#line 1881 "parser.tab.c"
     break;
 
   case 51:
@@ -1889,7 +1886,7 @@ yyreduce:
               yyval = createExpNode(expId); 
               yyval->key.op = DIF; 
             }
-#line 1893 "parser.tab.c"
+#line 1890 "parser.tab.c"
     break;
 
   case 52:
@@ -1900,13 +1897,13 @@ yyreduce:
               yyval->child[1] = yyvsp[0];
               yyval->key.op = yyvsp[-1]->key.op; 
             }
-#line 1904 "parser.tab.c"
+#line 1901 "parser.tab.c"
     break;
 
   case 53:
 #line 304 "parser.y"
                                      { yyval = yyvsp[0]; }
-#line 1910 "parser.tab.c"
+#line 1907 "parser.tab.c"
     break;
 
   case 54:
@@ -1915,7 +1912,7 @@ yyreduce:
           yyval = createExpNode(expId); 
           yyval->key.op = PLUS; 
         }
-#line 1919 "parser.tab.c"
+#line 1916 "parser.tab.c"
     break;
 
   case 55:
@@ -1924,7 +1921,7 @@ yyreduce:
           yyval = createExpNode(expId); 
           yyval->key.op = MINUS;
         }
-#line 1928 "parser.tab.c"
+#line 1925 "parser.tab.c"
     break;
 
   case 56:
@@ -1935,13 +1932,13 @@ yyreduce:
             yyval->child[1] = yyvsp[0];
             yyval->key.op = yyvsp[-1]->key.op; 
           }
-#line 1939 "parser.tab.c"
+#line 1936 "parser.tab.c"
     break;
 
   case 57:
 #line 321 "parser.y"
                                { yyval = yyvsp[0]; }
-#line 1945 "parser.tab.c"
+#line 1942 "parser.tab.c"
     break;
 
   case 58:
@@ -1950,7 +1947,7 @@ yyreduce:
           yyval = createExpNode(expId); 
           yyval->key.op = MULT;
         }
-#line 1954 "parser.tab.c"
+#line 1951 "parser.tab.c"
     break;
 
   case 59:
@@ -1959,25 +1956,25 @@ yyreduce:
           yyval = createExpNode(expId); 
           yyval->key.op = SLASH;
         }
-#line 1963 "parser.tab.c"
+#line 1960 "parser.tab.c"
     break;
 
   case 60:
 #line 332 "parser.y"
                              { yyval = yyvsp[-2]; }
-#line 1969 "parser.tab.c"
+#line 1966 "parser.tab.c"
     break;
 
   case 61:
 #line 333 "parser.y"
               { yyval = yyvsp[0]; }
-#line 1975 "parser.tab.c"
+#line 1972 "parser.tab.c"
     break;
 
   case 62:
 #line 334 "parser.y"
                    { yyval = yyvsp[0]; }
-#line 1981 "parser.tab.c"
+#line 1978 "parser.tab.c"
     break;
 
   case 63:
@@ -1987,7 +1984,7 @@ yyreduce:
           yyval->key.value = atoi(tokenNUM);
           yyval->type = Integer;
         }
-#line 1991 "parser.tab.c"
+#line 1988 "parser.tab.c"
     break;
 
   case 64:
@@ -2000,7 +1997,7 @@ yyreduce:
             push(&functionStack, strncpy(functionName, tokenID, sizeof(tokenID + 1)));
             currentLine = lineCount;
           }
-#line 2004 "parser.tab.c"
+#line 2001 "parser.tab.c"
     break;
 
   case 65:
@@ -2011,19 +2008,19 @@ yyreduce:
               yyval->key.name = pop(&functionStack);
               yyval->line = currentLine;
             }
-#line 2015 "parser.tab.c"
+#line 2012 "parser.tab.c"
     break;
 
   case 66:
 #line 356 "parser.y"
                      { yyval = yyvsp[0]; }
-#line 2021 "parser.tab.c"
+#line 2018 "parser.tab.c"
     break;
 
   case 67:
 #line 356 "parser.y"
                                     { yyval = NULL; }
-#line 2027 "parser.tab.c"
+#line 2024 "parser.tab.c"
     break;
 
   case 68:
@@ -2037,23 +2034,23 @@ yyreduce:
                 }
                 else yyval = yyvsp[0];
               }
-#line 2041 "parser.tab.c"
+#line 2038 "parser.tab.c"
     break;
 
   case 69:
 #line 367 "parser.y"
                                       { yyval = yyvsp[0]; }
-#line 2047 "parser.tab.c"
+#line 2044 "parser.tab.c"
     break;
 
   case 70:
 #line 368 "parser.y"
                                       { yyval = yyvsp[0]; }
-#line 2053 "parser.tab.c"
+#line 2050 "parser.tab.c"
     break;
 
 
-#line 2057 "parser.tab.c"
+#line 2054 "parser.tab.c"
 
       default: break;
     }
@@ -2295,7 +2292,7 @@ int yylex() {
     return YYEOF;
   }
 
-  return tk.type + 256;
+  return tk.type;
 }
 
 treeNode *parse() { 
