@@ -5,9 +5,9 @@
   #include "syntaxTree.h"
   #include "parserHelper.h"
 
-  char *expName; 
-  char *variableName; 
-  char *functionName;
+  char expName[BUFFER_MAX_LENGTH]; 
+  char variableName[BUFFER_MAX_LENGTH]; 
+  char functionName[BUFFER_MAX_LENGTH];
 
   int currentLine = 1;
   int functionCurrentLine = 1;
@@ -97,7 +97,7 @@ var_decl : exp_type IDENTIFIER {
 
 exp_type : INT { 
               $$ = createDeclNode(declIdType); 
-              $$->type = Integer; 
+              $$->type = Integer;
             }
 			      | VOID { 
               $$ = createDeclNode(declIdType); 
@@ -206,6 +206,32 @@ stmt : exp_decl     { $$ = $1; }
 
 exp_decl : exp SEMICOLON { $$ = $1; } | SEMICOLON { $$ = NULL; };
 
+cond_decl : IF OPARENT exp CPARENT stmt { 
+                $$ = createStmtNode(stmtIf);
+                $$->child[0] = $3;
+                $$->child[1] = $5;
+              }
+              | IF OPARENT exp CPARENT stmt ELSE stmt { 
+                $$ = createStmtNode(stmtIf);
+                $$->child[0] = $3;
+                $$->child[1] = $5;
+                $$->child[2] = $7;
+              };
+
+loop_decl : WHILE OPARENT exp CPARENT stmt { 
+              $$ = createStmtNode(stmtWhile);
+              $$->child[0] = $3;
+              $$->child[1] = $5;
+            };
+
+return_decl : RETURN SEMICOLON { 
+                $$ = createStmtNode(stmtReturn);
+              }   
+              | RETURN exp SEMICOLON {	
+                $$ = createStmtNode(stmtReturn);
+                $$->child[0] = $2;
+              };
+
 exp : var ASSIGN exp { 
               $$ = createStmtNode(stmtAttrib);
               $$->child[0] = $1;
@@ -243,6 +269,31 @@ exp_simple : exp_sum operator exp_sum {
                 $$->key.op = $2->key.op; 
               } 
 				      | exp_sum { $$ = $1; };
+
+operator : LTE { 
+              $$ = createExpNode(expId); 
+              $$->key.op = LTE; 
+            }
+            | LT { 
+              $$ = createExpNode(expId); 
+              $$->key.op = LT; 
+            }
+            | GT { 
+              $$ = createExpNode(expId); 
+              $$->key.op = GT; 
+            }
+            | GTE { 
+              $$ = createExpNode(expId); 
+              $$->key.op = GTE; 
+            }
+            | EQUAL {
+              $$ = createExpNode(expId); 
+              $$->key.op = EQUAL; 
+            }
+            | DIF {
+              $$ = createExpNode(expId); 
+              $$->key.op = DIF; 
+            };
 
 exp_sum : exp_sum sum term { 
               $$ = createExpNode(expOp);
@@ -315,57 +366,6 @@ list_arg : list_arg COMMA exp {
               }
 			        | arg { $$ = $1; } 
 			        | exp { $$ = $1; };
-
-operator : LTE { 
-              $$ = createExpNode(expId); 
-              $$->key.op = LTE; 
-            }
-            | LT { 
-              $$ = createExpNode(expId); 
-              $$->key.op = LT; 
-            }
-            | GT { 
-              $$ = createExpNode(expId); 
-              $$->key.op = GT; 
-            }
-            | GTE { 
-              $$ = createExpNode(expId); 
-              $$->key.op = GTE; 
-            }
-            | EQUAL {
-              $$ = createExpNode(expId); 
-              $$->key.op = EQUAL; 
-            }
-            | DIF {
-              $$ = createExpNode(expId); 
-              $$->key.op = DIF; 
-            };
-
-cond_decl : IF OPARENT exp CPARENT stmt { 
-                $$ = createStmtNode(stmtIf);
-                $$->child[0] = $3;
-                $$->child[1] = $5;
-              }
-              | IF OPARENT exp CPARENT stmt ELSE stmt { 
-                $$ = createStmtNode(stmtIf);
-                $$->child[0] = $3;
-                $$->child[1] = $5;
-                $$->child[2] = $7;
-              };
-
-loop_decl : WHILE OPARENT exp CPARENT stmt { 
-              $$ = createStmtNode(stmtWhile);
-              $$->child[0] = $3;
-              $$->child[1] = $5;
-            };
-
-return_decl : RETURN SEMICOLON { 
-                $$ = createStmtNode(stmtReturn);
-              }   
-              | RETURN exp SEMICOLON {	
-                $$ = createStmtNode(stmtReturn);
-                $$->child[0] = $2;
-              };
 
 %%
 

@@ -158,31 +158,6 @@ token lexicalAnalysis() {
 		/* Get new state from DFA table */
 		currentState = getNextDFAstate(dfaTable, currentChar, currentState);
 
-		/* Ignore comments */
-		int isComment = isCommentState(currentState);
-		if (!isComment) {
-
-			/* Check if previous state is a Final State */
-			if (currentState == 0) {
-				int isFinalState = finalStates[previousState];
-				if (isFinalState)
-				{
-					int token = getToken(previousState);
-					printf("Linha: %d | Token: %s\n", lineCount, lexem);
-					struct token tk = { .type = token, .line = lineCount, .name = lexem };
-					return tk;
-				}
-				currentState = getNextDFAstate(dfaTable, currentChar, currentState);
-			}
-
-			/* Invalid state (Lexical Error) */
-			if (currentState == -1) {
-				printf("(!) ERRO LEXICO: Lexema: %s | Linha: %d", lexem, lineCount);
-				return errTk;
-			}
-		}
-
-		previousState = currentState;
 		if (currentChar == '\n') {
 			lineCount++;
 		}
@@ -195,6 +170,34 @@ token lexicalAnalysis() {
 		else {
 			memset(lexem, 0, sizeof(lexem));
 		}
+
+		/* Ignore comments */
+		int isComment = isCommentState(currentState);
+		if (!isComment) {
+
+			/* Check if previous state is a Final State */
+			if (currentState == 0) {
+				int isFinalState = finalStates[previousState];
+				if (isFinalState)
+				{
+					int token = getToken(previousState);
+					printf("Linha: %d | Lexem: %s\n", lineCount, tokenNames[0][token - 1]);
+					currentState = getNextDFAstate(dfaTable, currentChar, currentState);
+					previousState = currentState;
+
+					struct token tk = { .type = token, .line = lineCount, .name = lexem };
+					return tk;
+				}
+			}
+
+			/* Invalid state (Lexical Error) */
+			if (currentState == -1) {
+				printf("(!) ERRO LEXICO: Lexema: %s | Linha: %d", lexem, lineCount);
+				return errTk;
+			}
+		}
+
+		previousState = currentState;
 	}
 
 	/* Check last character from file */

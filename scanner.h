@@ -78,6 +78,11 @@ static int dfaTable[DFA_STATES_COUNT][DFA_TRANSITIONS_COUNT] = {
 
 static int finalStates[DFA_STATES_COUNT] = {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
+static char *tokenNames[1][27] = {
+    {"if", "int", "return", "void", "else", "while", "+", "-", "*", "/", "=", "==", "<", ">", "<=", ">=", "!=", ";", ",", "(", ")", "[", "]", "{", "}", "ID", "NUM"},
+};
+
+void initializeBuffers();
 int getToken(int finalState);
 int isSpecialChar(char c);
 int isLetterState(int state);

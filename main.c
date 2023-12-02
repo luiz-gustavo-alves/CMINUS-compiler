@@ -1,5 +1,13 @@
 #include "utils.h"
 #include "syntaxTree.h"
+#include "scanner.h"
+
+void initializeBuffers() {
+	memset(tokenID, 0, sizeof(TOKEN_MAX_LENGTH));
+	memset(tokenNUM, 0, sizeof(TOKEN_MAX_LENGTH));
+	memset(tokenRESERVED, 0, sizeof(TOKEN_MAX_LENGTH));
+	memset(tokenSYMBOL, 0, sizeof(TOKEN_MAX_LENGTH));
+}
 
 int main(int argc, char *argv[]) {
 
@@ -9,7 +17,11 @@ int main(int argc, char *argv[]) {
 	}
 
 	file = fopen(argv[1], "r");
+
+	initializeBuffers();
 	syntaxTree = parse();
+
+	printSyntaxTree(syntaxTree);
 
 	fclose(file);
 	return 0;

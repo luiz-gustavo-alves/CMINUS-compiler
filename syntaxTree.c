@@ -60,6 +60,7 @@ void printSyntaxTree(treeNode *tree) {
                     break;
 
                 case expOp:
+                    printf("%d\n", tree->key.op);
                     switch (tree->key.op) {
                         case plus: printf("+ \n"); break;
                         case minus: printf("- \n"); break;
