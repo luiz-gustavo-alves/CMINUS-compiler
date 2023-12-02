@@ -6,4 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
+FILE *file;
+
 #endif /* UTILS_H */

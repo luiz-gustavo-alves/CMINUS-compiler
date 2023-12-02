@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "scanner.h"
+#include "token.h"
 
 #include <ctype.h>
 
@@ -8,7 +9,7 @@ int isSpecialChar(char c) {
 }
 
 int isLetterChar(char c) {
-	return (c >= 65 && c <= 90) || (c >= 97 && c <= 122);
+	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
 }
 
 int isLetterState(int state) {
@@ -16,7 +17,7 @@ int isLetterState(int state) {
 }
 
 int isDigitChar(char c) {
-	return (c >= 48 && c <= 57);
+	return (c >= '0' && c <= '9');
 }
 
 int isDigitState(int state) {
@@ -92,7 +93,7 @@ int getNextDFAstate(int dfaTable[DFA_STATES_COUNT][DFA_TRANSITIONS_COUNT], char 
 	return dfaTable[state][32];
 }
 
-char *getToken(int finalState) {
+int getToken(int finalState) {
 
 	/* Edge cases (Check possible IDENTIFIERS in reserved words) */
 	int isIDfrom_IF_or_INT_DFA = (finalState == 1 || finalState == 3);
@@ -101,110 +102,55 @@ char *getToken(int finalState) {
 	int isIDfrom_ELSE_DFA = (finalState >= 15 && finalState <= 17);
 	int isIDfrom_WHERE_DFA = (finalState >= 19 && finalState <= 22);
 
-	if (isIDfrom_IF_or_INT_DFA || isIDfrom_RETURN_DFA || isIDfrom_VOID_DFA || isIDfrom_ELSE_DFA || isIDfrom_WHERE_DFA) {
-		return "IDENTIFIER";
+	if (isIDfrom_IF_or_INT_DFA || 
+		isIDfrom_RETURN_DFA || 
+		isIDfrom_VOID_DFA || 
+		isIDfrom_ELSE_DFA || 
+		isIDfrom_WHERE_DFA || 
+		finalState == 44) {
+		strncpy(tokenID, lexem, TOKEN_MAX_LENGTH);
+		return TOKEN_IDENTIFIER;
+	}
+
+	if (finalState == 45) {
+		strncpy(tokenNUM, lexem, TOKEN_MAX_LENGTH); 
+		return TOKEN_NUMBER;
 	}
 
 	switch (finalState) {
-		case 2: return "IF";
-		case 4: return "INT";
-		case 10: return "RETURN";
-		case 14: return "VOID";
-		case 18: return "ELSE";
-		case 23: return "WHILE";
-		case 24: return "PLUS";
-		case 25: return "MINUS";
-		case 26: return "MULT";
-		case 27: return "SLASH";
-		case 31: return "ASSIGN";
-		case 32: return "EQUAL";
-		case 33: return "LT";
-		case 34: return "GT";
-		case 36: return "SEMICOLON";
-		case 37: return "COMMA";
-		case 38: return "OPARENT";
-		case 39: return "CPARENT";
-		case 40: return "OBRACKET";
-		case 41: return "CBRACKET";
-		case 42: return "OKEY";
-		case 43: return "CKEY";
-		case 44: return "IDENTIFIER";
-		case 45: return "NUMBER";
-		case 46: return "LTE";
-		case 47: return "GTE";
-		case 48: return "DIF";
-		default: return "INVALID TOKEN";
+		case 2: strncpy(tokenRESERVED, "IF", TOKEN_MAX_LENGTH); return TOKEN_IF;
+		case 4: strncpy(tokenRESERVED, "INT", TOKEN_MAX_LENGTH); return TOKEN_INT;
+		case 10: strncpy(tokenRESERVED, "RETURN", TOKEN_MAX_LENGTH); return TOKEN_RETURN;
+		case 14: strncpy(tokenRESERVED, "VOID", TOKEN_MAX_LENGTH); return TOKEN_VOID;
+		case 18: strncpy(tokenRESERVED, "ELSE", TOKEN_MAX_LENGTH); return TOKEN_ELSE;
+		case 23: strncpy(tokenRESERVED, "WHILE", TOKEN_MAX_LENGTH); return TOKEN_WHILE;
+		case 24: strncpy(tokenSYMBOL, "+", TOKEN_MAX_LENGTH); return TOKEN_PLUS;
+		case 25: strncpy(tokenSYMBOL, "-", TOKEN_MAX_LENGTH); return TOKEN_MINUS;
+		case 26: strncpy(tokenSYMBOL, "*", TOKEN_MAX_LENGTH); return TOKEN_MULT;
+		case 27: strncpy(tokenSYMBOL, "/", TOKEN_MAX_LENGTH); return TOKEN_SLASH;
+		case 31: strncpy(tokenSYMBOL, "=", TOKEN_MAX_LENGTH); return TOKEN_ASSIGN;
+		case 32: strncpy(tokenSYMBOL, "==", TOKEN_MAX_LENGTH); return TOKEN_EQUAL;
+		case 33: strncpy(tokenSYMBOL, "<", TOKEN_MAX_LENGTH); return TOKEN_LT;
+		case 34: strncpy(tokenSYMBOL, ">", TOKEN_MAX_LENGTH); return TOKEN_GT;
+		case 36: strncpy(tokenSYMBOL, ";", TOKEN_MAX_LENGTH); return TOKEN_SEMICOLON;
+		case 37: strncpy(tokenSYMBOL, ",", TOKEN_MAX_LENGTH); return TOKEN_COMMA;
+		case 38: strncpy(tokenSYMBOL, "(", TOKEN_MAX_LENGTH); return TOKEN_OPARENT;
+		case 39: strncpy(tokenSYMBOL, ")", TOKEN_MAX_LENGTH); return TOKEN_CPARENT;
+		case 40: strncpy(tokenSYMBOL, "[", TOKEN_MAX_LENGTH); return TOKEN_OBRACKET;
+		case 41: strncpy(tokenSYMBOL, "]", TOKEN_MAX_LENGTH); return TOKEN_CBRACKET;
+		case 42: strncpy(tokenSYMBOL, "{", TOKEN_MAX_LENGTH); return TOKEN_OKEY;
+		case 43: strncpy(tokenSYMBOL, "}", TOKEN_MAX_LENGTH); return TOKEN_CKEY;
+		case 46: strncpy(tokenSYMBOL, "<=", TOKEN_MAX_LENGTH); return TOKEN_LTE;
+		case 47: strncpy(tokenSYMBOL, ">=", TOKEN_MAX_LENGTH); return TOKEN_GTE;
+		case 48: strncpy(tokenSYMBOL, "!=", TOKEN_MAX_LENGTH); return TOKEN_DIF;
+		default: strncpy(tokenSYMBOL, "ERROR", TOKEN_MAX_LENGTH); return 0;
 	}
 }
 
-int lexicalAnalysis(FILE *file) {
-	
-	printf("\n* * * * * FASE (1): ANALISE LEXICA * * * * *\n\n");
+token lexicalAnalysis() {
 
-	int dfaTable[DFA_STATES_COUNT][DFA_TRANSITIONS_COUNT] = {
-		{1, 5, 11, 15, 19, 44, 44, 44, 44, 44, 44, 44, 44, 44, 24, 25, 26, 27, 33, 34, 31, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, -1},
-		{44, 44, 44, 44, 44, 2, 3, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 44, 4, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 6, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 44, 7, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 44, 44, 8, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 9, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 10, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 44, 44, 44, 12, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{13, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 14, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 16, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 17, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 18, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{21, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 22, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 23, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 29, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28},
-		{28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 30, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 48, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, -1, -1},
-		{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 45, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1},
-	};
-
-	int finalStates[DFA_STATES_COUNT] = {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-
-	int currentState = 0;
-	int previousState = 0;
-	int lineCount = 1;
-	int lastLineCount = 1;
-	int lexicalError = 1;
-
-	char currentChar = '\0';
-	char previousChar = '\0';
-	char lexem[BUFFER_MAX_LENGTH];
 	memset(lexem, 0, sizeof(lexem));
+	struct token errTk = {0};
 
 	/* Lexical Analysis */
 	while ((currentChar = fgetc(file)) != EOF) {
@@ -216,22 +162,15 @@ int lexicalAnalysis(FILE *file) {
 		int isComment = isCommentState(currentState);
 		if (!isComment) {
 
-			/* Concat Lexem String */
-			if (!isSpecialChar(currentChar)) {
-				strncat(lexem, &currentChar, 1);
-				lastLineCount = lineCount;
-			}
-			else {
-				memset(lexem, 0, sizeof(lexem));
-			}
-
 			/* Check if previous state is a Final State */
 			if (currentState == 0) {
 				int isFinalState = finalStates[previousState];
 				if (isFinalState)
 				{
-					char *token = getToken(previousState);
-					printf("Linha: %d | Token: %s\n", lineCount, token);
+					int token = getToken(previousState);
+					printf("Linha: %d | Token: %s\n", lineCount, lexem);
+					struct token tk = { .type = token, .line = lineCount, .name = lexem };
+					return tk;
 				}
 				currentState = getNextDFAstate(dfaTable, currentChar, currentState);
 			}
@@ -239,7 +178,7 @@ int lexicalAnalysis(FILE *file) {
 			/* Invalid state (Lexical Error) */
 			if (currentState == -1) {
 				printf("(!) ERRO LEXICO: Lexema: %s | Linha: %d", lexem, lineCount);
-				return lexicalError;
+				return errTk;
 			}
 		}
 
@@ -247,28 +186,36 @@ int lexicalAnalysis(FILE *file) {
 		if (currentChar == '\n') {
 			lineCount++;
 		}
+
+		/* Concat Lexem String */
+		if (!isSpecialChar(currentChar)) {
+			strncat(lexem, &currentChar, 1);
+			lastLineCount = lineCount;
+		}
+		else {
+			memset(lexem, 0, sizeof(lexem));
+		}
 	}
 
 	/* Check last character from file */
 	currentState = getNextDFAstate(dfaTable, previousChar, currentState);
 	if (isCommentState(currentState)) {
 		printf("(!) ERRO LEXICO: unterminated string");
-		return lexicalError;
+		return errTk;
 	}
 
 	if (currentState == -1) {
 		printf("(!) ERRO LEXICO: Lexema: %s | Linha: %d", lexem, lineCount);
-		return lexicalError;
+		return errTk;
 	}
 
 	if (currentState == 0) {
 		int isFinalState = finalStates[previousState];
 		if (isFinalState) {
-			char *token = getToken(previousState);
-			printf("Linha: %d | Token: %s\n", lineCount, token);
+			int token = getToken(previousState);
+			printf("Linha: %d | Token: %s\n", lineCount, lexem);
+			struct token tk = { .type = token, .line = lineCount, .name = lexem };
+			return tk;
 		}
 	}
-
-	/* Finished Lexical Analysis with no errors */
-	return 0;
 }

@@ -1,6 +1,5 @@
-#include "scanner.h"
-
-FILE *file;
+#include "utils.h"
+#include "syntaxTree.h"
 
 int main(int argc, char *argv[]) {
 
@@ -10,10 +9,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	file = fopen(argv[1], "r");
-	int lexicalError = lexicalAnalysis(file);
-	if (!lexicalError) {
-		printf("\n\n* * * * * FASE (2): ANALISE SINTATICA | GERACAO DA ARVORE SINTATICA: * * * * *\n\n");
-	}
+	syntaxTree = parse();
 
 	fclose(file);
 	return 0;

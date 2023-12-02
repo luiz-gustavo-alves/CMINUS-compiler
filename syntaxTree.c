@@ -1,9 +1,10 @@
 #include "syntaxTree.h"
+#include "scanner.h"
 #include "utils.h"
 
 int treeSize = 0;
 
-treeNode *createNode(int currentLine) {
+treeNode *createNode() {
 
     treeNode *newNode = (treeNode*) malloc(sizeof(treeNode));
     int i;
@@ -11,29 +12,29 @@ treeNode *createNode(int currentLine) {
         newNode->child[i] = NULL;
     }
     newNode->sibling = NULL;
-    newNode->line = currentLine;
+    newNode->line = lineCount;
     return newNode;
 }
 
-treeNode *createDeclNode(declType node, int currentLine) {
+treeNode *createDeclNode(declType node) {
 
-    treeNode *newNode = createNode(currentLine);
+    treeNode *newNode = createNode();
     newNode->node = decl;
     newNode->subType.decl = node;
     return newNode;
 }
 
-treeNode *createStmtNode(stmtType node, int currentLine) {
+treeNode *createStmtNode(stmtType node) {
 
-    treeNode *newNode = createNode(currentLine);
+    treeNode *newNode = createNode();
     newNode->node = stmt;
     newNode->subType.stmt = node;
     return newNode;
 }
 
-treeNode *createExpNode(expType node, int currentLine) {
+treeNode *createExpNode(expType node) {
 
-    treeNode *newNode = createNode(currentLine);
+    treeNode *newNode = createNode();
     newNode->node = exp;
     newNode->subType.exp = node;
     return newNode;
@@ -51,26 +52,26 @@ void printSyntaxTree(treeNode *tree) {
         if (tree->node == exp) {
 
             switch (tree->subType.exp) {
-                case exp_num: printf("NUM: %d\n", tree->key.value); break;
+                case expNum: printf("NUM: %d\n", tree->key.value); break;
 
-                case exp_id:
+                case expId:
                     if (strcmp(tree->key.name, "void")) printf("void \n");
                     else printf("ID: %s\n", tree->key.name);
                     break;
 
-                case exp_op:
+                case expOp:
                     switch (tree->key.op) {
-                        case PLUS: printf("+ \n"); break;
-                        case MINUS: printf("- \n"); break;
-                        case MULT: printf("* \n"); break;
-                        case SLASH: printf("/ \n"); break;
-                        case ASSIGN: printf("= \n"); break;
-                        case LT: printf("< \n"); break;
-                        case GT: printf("> \n"); break;
-                        case LTE: printf("<= \n"); break;
-                        case GTE: printf(">= \n"); break;
-                        case DIF: printf("!= \n"); break;
-                        case EQUAL: printf("== \n"); break;
+                        case plus: printf("+ \n"); break;
+                        case minus: printf("- \n"); break;
+                        case mult: printf("* \n"); break;
+                        case slash: printf("/ \n"); break;
+                        case assign: printf("= \n"); break;
+                        case lt: printf("< \n"); break;
+                        case gt: printf("> \n"); break;
+                        case lte: printf("<= \n"); break;
+                        case gte: printf(">= \n"); break;
+                        case dif: printf("!= \n"); break;
+                        case equal: printf("== \n"); break;
                         default: printf("INVALID OPERATOR \n"); break;
                     }
                     break;
@@ -80,19 +81,19 @@ void printSyntaxTree(treeNode *tree) {
         } else if (tree->node == stmt) { 
 
 			switch (tree->subType.stmt) {
-                case stmt_if: printf("if \n"); break;
-                case stmt_while: printf("while \n"); break;
-                case stmt_attrib: printf("assign \n"); break;
-                case stmt_return: printf("return \n"); break;
-                case stmt_func: printf("Function Call: %s\n", tree->key.name); break;
+                case stmtIf: printf("if \n"); break;
+                case stmtWhile: printf("while \n"); break;
+                case stmtAttrib: printf("assign \n"); break;
+                case stmtReturn: printf("return \n"); break;
+                case stmtFunc: printf("Function Call: %s\n", tree->key.name); break;
                 default: printf("INVALID STATEMENT \n");
             }
         } else if (tree->node == decl) {
 
 			switch(tree->subType.decl) {
-                case decl_func: printf("Function Declaration: %s\n", tree->key.name); break;
-                case decl_var: printf("Variable Declaration: %s\n", tree->key.name); break;
-                case decl_type:
+                case declFunc: printf("Function Declaration: %s\n", tree->key.name); break;
+                case declVar: printf("Variable Declaration: %s\n", tree->key.name); break;
+                case declIdType:
                     if (tree->type == Integer) printf("int \n");
                     else if(tree->type == Array) printf("int[] \n");
                     else printf("void \n");
