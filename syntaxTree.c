@@ -53,15 +53,15 @@ void printSyntaxTree(treeNode *tree) {
         if (tree->node == exp) {
 
             switch (tree->subType.exp) {
-                case expNum: printf("NUM %d\n", tree->key.value); break;
+                case expNum: printf("NUM: %d\n", tree->key.value); break;
 
                 case expId:
                     if (strcmp(tree->key.name, "void") == 1) printf("void \n");
-                    else printf("ID %s\n", tree->key.name);
+                    else printf("ID: %s\n", tree->key.name);
                     break;
 
                 case expOp:
-                    printf("%s \n", tokenNames[0][tree->key.op - 1]);
+                    printf("OPERATOR: %s \n", tokenNames[1][tree->key.op - 1]);
                     break;
 
                 default: printf("INVALID EXPRESION");
@@ -71,7 +71,7 @@ void printSyntaxTree(treeNode *tree) {
 			switch (tree->subType.stmt) {
                 case stmtIf: printf("if \n"); break;
                 case stmtWhile: printf("while \n"); break;
-                case stmtAttrib: printf("= \n"); break;
+                case stmtAttrib: printf("ASSIGN \n"); break;
                 case stmtReturn: printf("return \n"); break;
                 case stmtFunc: printf("Function Call: %s\n", tree->key.name); break;
                 default: printf("INVALID STATEMENT \n");
@@ -82,9 +82,9 @@ void printSyntaxTree(treeNode *tree) {
                 case declFunc: printf("Function Declaration: %s\n", tree->key.name); break;
                 case declVar: printf("Variable Declaration: %s\n", tree->key.name); break;
                 case declIdType:
-                    if (tree->type == Integer) printf("int \n");
-                    else if(tree->type == Array) printf("int[] \n");
-                    else printf("void \n");
+                    if (tree->type == Integer) printf("Type int \n");
+                    else if(tree->type == Array) printf("Type int[] \n");
+                    else printf("Type void \n");
                     break;
 
                 default: printf("INVALID DECLARATION \n");

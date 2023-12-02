@@ -8,4 +8,7 @@
 
 FILE *file;
 
+int lexicalError;
+int syntaxError;
+
 #endif /* UTILS_H */

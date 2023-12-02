@@ -8,12 +8,9 @@
 #define DFA_TRANSITIONS_COUNT 33
 #define TOKEN_MAX_LENGTH 32
 
+int lineCount;
 static int currentState = 0;
 static int previousState = 0;
-static int lineCount = 1;
-static int lastLineCount = 1;
-static int lexicalError = 0;
-
 static char currentChar = '\0';
 static char previousChar = '\0';
 
@@ -78,12 +75,13 @@ static int dfaTable[DFA_STATES_COUNT][DFA_TRANSITIONS_COUNT] = {
 static int finalStates[DFA_STATES_COUNT] = {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 void initializeBuffers();
-int getToken(int finalState);
+int getTokenType(int finalState);
 int isSpecialChar(char c);
 int isLetterState(int state);
 int isDigitState(int state);
 int isCommentState(int state);
 int getNextDFAstate(int dfaTable[DFA_STATES_COUNT][DFA_TRANSITIONS_COUNT], char c, int state);
+token getToken();
 token lexicalAnalysis();
 
 #endif /* SCANNER_H */

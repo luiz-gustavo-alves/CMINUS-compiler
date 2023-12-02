@@ -93,7 +93,7 @@ int getNextDFAstate(int dfaTable[DFA_STATES_COUNT][DFA_TRANSITIONS_COUNT], char 
 	return dfaTable[state][32];
 }
 
-int getToken(int finalState) {
+int getTokenType(int finalState) {
 
 	/* Edge cases (Check possible IDENTIFIERS in reserved words) */
 	int isIDfrom_IF_or_INT_DFA = (finalState == 1 || finalState == 3);
@@ -147,6 +147,28 @@ int getToken(int finalState) {
 	}
 }
 
+token getToken(int finalState) {
+
+	int type = getTokenType(finalState);
+	struct token token;
+	token.type = type;
+	token.line = lineCount;
+
+	if (type == TOKEN_IDENTIFIER) {
+		printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][type - 1], tokenID);
+		token.name = tokenID;
+	}
+	else if (type == TOKEN_NUMBER) {
+		printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][type - 1], tokenNUM);
+		token.name = tokenNUM;
+	}
+	else {
+		printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][type - 1], tokenNames[0][type - 1]);
+		token.name = tokenSYMBOL;
+	}
+	return token;
+}
+
 token lexicalAnalysis() {
 
 	struct token errTk = {0};
@@ -165,44 +187,23 @@ token lexicalAnalysis() {
 			/* Concat Lexem String */
 			if ((isLetterChar(currentChar) || isDigitChar(currentChar))) {
 				strncat(lexem, &currentChar, 1);
-				lastLineCount = lineCount;
-			} 
+			}
 
 			/* Check if previous state is a Final State */
 			if (currentState == 0) {
 				int isFinalState = finalStates[previousState];
 				if (isFinalState)
 				{
-					int token = getToken(previousState);
+					struct token token = getToken(previousState);
 					currentState = getNextDFAstate(dfaTable, currentChar, currentState);
 					previousState = currentState;
 
-					struct token tk;
-					tk.type = token;
-					tk.line = lineCount;
-
-					if (token == TOKEN_IDENTIFIER) {
-						printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][token - 1], tokenID);
-						tk.name = tokenID;
-					}
-					else if (token == TOKEN_NUMBER) {
-						printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][token - 1], tokenNUM);
-						tk.name = tokenNUM;
-					}
-					else {
-						printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][token - 1], tokenNames[0][token - 1]);
-						tk.name = tokenSYMBOL;
-					}
-
+					if (currentChar == '\n') lineCount++;
 					if (!(isLetterChar(currentChar) || isDigitChar(currentChar))) {
 						memset(lexem, 0, sizeof(TOKEN_MAX_LENGTH));
 					}
 
-					if (currentChar == '\n') {
-						lineCount++;
-					}
-					
-					return tk;
+					return token;
 				}
 			}
 
@@ -214,9 +215,7 @@ token lexicalAnalysis() {
 		}
 
 		previousState = currentState;
-		if (currentChar == '\n') {
-			lineCount++;
-		}
+		if (currentChar == '\n') lineCount++;
 	}
 
 	/* Check last character from file */
@@ -234,25 +233,8 @@ token lexicalAnalysis() {
 	if (currentState == 0) {
 		int isFinalState = finalStates[previousState];
 		if (isFinalState) {
-			int token = getToken(previousState);
-			struct token tk;
-			tk.type = token;
-			tk.line = lineCount;
-
-			if (token == TOKEN_IDENTIFIER) {
-				printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][token - 1], tokenID);
-				tk.name = tokenID;
-			}
-			else if (token == TOKEN_NUMBER) {
-				printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][token - 1], tokenNUM);
-				tk.name = tokenNUM;
-			}
-			else {
-				printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][token - 1], tokenNames[0][token - 1]);
-				tk.name = tokenSYMBOL;
-			}
-
-			return tk;
+			struct token token = getToken(previousState);
+			return token;
 		}
 	}
 

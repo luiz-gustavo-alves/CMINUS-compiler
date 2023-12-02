@@ -2307,5 +2307,6 @@ int yyerror(char *errorMsg) {
 	if (lexicalError) return 1;
   
   printf("(!) ERRO SINTATICO: Linha: %d\n", lineCount);
+  syntaxError = 1;
   return 1;
 }
