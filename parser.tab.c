@@ -74,9 +74,9 @@
   #include "syntaxTree.h"
   #include "parserHelper.h"
 
-  char expName[TOKEN_MAX_LENGTH]; 
-  char variableName[TOKEN_MAX_LENGTH]; 
-  char functionName[TOKEN_MAX_LENGTH];
+  char *expName; 
+  char *variableName; 
+  char *functionName;
 
   int currentLine = 1;
   int functionCurrentLine = 1;
@@ -1451,7 +1451,7 @@ yyreduce:
   case 7:
 #line 66 "parser.y"
                                { 
-                strncpy(expName , tokenID, sizeof(tokenID + 1));
+                expName = getTokenName(tokenID);
                 currentLine = lineCount;
               }
 #line 1458 "parser.tab.c"
@@ -1473,7 +1473,7 @@ yyreduce:
   case 9:
 #line 78 "parser.y"
                                       { 
-                strncpy(expName , tokenID, sizeof(tokenID + 1));
+                expName = getTokenName(tokenID);
                 currentLine = lineCount;
               }
 #line 1480 "parser.tab.c"
@@ -1520,7 +1520,7 @@ yyreduce:
   case 13:
 #line 107 "parser.y"
                                 {
-                strncpy(functionName, tokenID, sizeof(tokenID + 1));
+                functionName = getTokenName(tokenID);
                 functionCurrentLine = lineCount;
               }
 #line 1527 "parser.tab.c"
@@ -1582,7 +1582,7 @@ yyreduce:
 #line 141 "parser.y"
                           {
             yyval = yyvsp[-1];
-            strncpy(expName , tokenID, sizeof(tokenID + 1));
+            expName = getTokenName(tokenID);
             currentLine = lineCount;
 
             YYSTYPE declNode = createDeclNode(declVar); 
@@ -1599,7 +1599,7 @@ yyreduce:
   case 20:
 #line 153 "parser.y"
                                   {
-            strncpy(expName, tokenID, sizeof(tokenID + 1));
+            expName = getTokenName(tokenID);
             currentLine = lineCount;
           }
 #line 1606 "parser.tab.c"
@@ -1786,7 +1786,7 @@ yyreduce:
   case 41:
 #line 244 "parser.y"
                  { 
-        strncpy(variableName, tokenID, sizeof(tokenID + 1));
+        variableName = getTokenName(tokenID);
         currentLine = lineCount;
 
         yyval = createExpNode(expId);
@@ -1800,7 +1800,7 @@ yyreduce:
   case 42:
 #line 253 "parser.y"
                    { 
-        strncpy(variableName, tokenID, sizeof(tokenID + 1));
+        variableName = getTokenName(tokenID);
         currentLine = lineCount;
       }
 #line 1807 "parser.tab.c"
@@ -1994,7 +1994,7 @@ yyreduce:
             initStack(&functionStack);
             firstFunc = 0;
           }
-            push(&functionStack, strncpy(functionName, tokenID, sizeof(tokenID + 1)));
+            push(&functionStack, getTokenName(tokenID));
             currentLine = lineCount;
           }
 #line 2001 "parser.tab.c"
@@ -2289,6 +2289,7 @@ int yylex() {
 
   struct token tk = lexicalAnalysis(file);
   if (tk.type == 0) {
+    lexicalError = 1;
     return YYEOF;
   }
 
@@ -2297,12 +2298,14 @@ int yylex() {
 
 treeNode *parse() { 
 
+
 	yyparse(); 
 	return tree; 
 }
 
 int yyerror(char *errorMsg) {
-	
-  printf("Erro sintatico");
-  return 0;
+	if (lexicalError) return 1;
+  
+  printf("(!) ERRO SINTATICO: Linha: %d\n", lineCount);
+  return 1;
 }

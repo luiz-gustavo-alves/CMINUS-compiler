@@ -20,8 +20,11 @@ int main(int argc, char *argv[]) {
 	file = fopen(argv[1], "r");
 
 	initializeBuffers();
+
+	printf("\n* * * * * ANALISE LEXICA E SINTATICA * * * * *\n\n");
 	syntaxTree = parse();
 
+	printf("\n* * * * * ARVORE DE ANALISE SINTATICA * * * * *\n\n");
 	printSyntaxTree(syntaxTree);
 
 	fclose(file);

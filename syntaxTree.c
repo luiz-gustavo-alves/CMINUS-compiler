@@ -53,11 +53,11 @@ void printSyntaxTree(treeNode *tree) {
         if (tree->node == exp) {
 
             switch (tree->subType.exp) {
-                case expNum: printf("NUM: %d\n", tree->key.value); break;
+                case expNum: printf("NUM %d\n", tree->key.value); break;
 
                 case expId:
-                    if (strcmp(tree->key.name, "void")) printf("void \n");
-                    else printf("ID: %s\n", tree->key.name);
+                    if (strcmp(tree->key.name, "void") == 1) printf("void \n");
+                    else printf("ID %s\n", tree->key.name);
                     break;
 
                 case expOp:

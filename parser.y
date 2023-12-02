@@ -5,9 +5,9 @@
   #include "syntaxTree.h"
   #include "parserHelper.h"
 
-  char expName[TOKEN_MAX_LENGTH]; 
-  char variableName[TOKEN_MAX_LENGTH]; 
-  char functionName[TOKEN_MAX_LENGTH];
+  char *expName; 
+  char *variableName; 
+  char *functionName;
 
   int currentLine = 1;
   int functionCurrentLine = 1;
@@ -64,7 +64,7 @@ list_decl : list_decl decl {
 decl : var_decl { $$ = $1; } | func_decl { $$ = $1; };
 
 var_decl : exp_type IDENTIFIER { 
-                strncpy(expName , tokenID, sizeof(tokenID + 1));
+                expName = getTokenName(tokenID);
                 currentLine = lineCount;
               }
               SEMICOLON {
@@ -76,7 +76,7 @@ var_decl : exp_type IDENTIFIER {
                 $$->child[0] = declNode;
               }
             	| exp_type IDENTIFIER { 
-                strncpy(expName , tokenID, sizeof(tokenID + 1));
+                expName = getTokenName(tokenID);
                 currentLine = lineCount;
               }
             	OBRACKET NUMBER CBRACKET SEMICOLON { 
@@ -105,7 +105,7 @@ exp_type : INT {
             };
 
 func_decl : exp_type IDENTIFIER {
-                strncpy(functionName, tokenID, sizeof(tokenID + 1));
+                functionName = getTokenName(tokenID);
                 functionCurrentLine = lineCount;
               }
               OPARENT params CPARENT bloc_decl {
@@ -140,7 +140,7 @@ list_params : list_params COMMA arg {
 
 arg : exp_type IDENTIFIER {
             $$ = $1;
-            strncpy(expName , tokenID, sizeof(tokenID + 1));
+            expName = getTokenName(tokenID);
             currentLine = lineCount;
 
             YYSTYPE declNode = createDeclNode(declVar); 
@@ -151,7 +151,7 @@ arg : exp_type IDENTIFIER {
             
             $$->child[0] = declNode;
           } | exp_type IDENTIFIER {
-            strncpy(expName, tokenID, sizeof(tokenID + 1));
+            expName = getTokenName(tokenID);
             currentLine = lineCount;
           }
     	    OBRACKET CBRACKET {    
@@ -242,7 +242,7 @@ exp : var ASSIGN exp {
             | exp_simple { $$ = $1; };
 
 var : IDENTIFIER { 
-        strncpy(variableName, tokenID, sizeof(tokenID + 1));
+        variableName = getTokenName(tokenID);
         currentLine = lineCount;
 
         $$ = createExpNode(expId);
@@ -251,7 +251,7 @@ var : IDENTIFIER {
         $$->type = Void;
       }
       | IDENTIFIER { 
-        strncpy(variableName, tokenID, sizeof(tokenID + 1));
+        variableName = getTokenName(tokenID);
         currentLine = lineCount;
       } 
       OBRACKET exp CBRACKET {
@@ -343,7 +343,7 @@ activate : IDENTIFIER {
             initStack(&functionStack);
             firstFunc = 0;
           }
-            push(&functionStack, strncpy(functionName, tokenID, sizeof(tokenID + 1)));
+            push(&functionStack, getTokenName(tokenID));
             currentLine = lineCount;
           }
           OPARENT arguments CPARENT {   
@@ -373,6 +373,7 @@ int yylex() {
 
   struct token tk = lexicalAnalysis(file);
   if (tk.type == 0) {
+    lexicalError = 1;
     return YYEOF;
   }
 
@@ -381,12 +382,14 @@ int yylex() {
 
 treeNode *parse() { 
 
+
 	yyparse(); 
 	return tree; 
 }
 
 int yyerror(char *errorMsg) {
-	
-  printf("Erro sintatico");
-  return 0;
+	if (lexicalError) return 1;
+  
+  printf("(!) ERRO SINTATICO: Linha: %d\n", lineCount);
+  return 1;
 }

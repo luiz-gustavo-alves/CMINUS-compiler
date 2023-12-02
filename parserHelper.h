@@ -18,5 +18,6 @@ typedef struct stack {
 void initStack(stack *st);
 void push(stack *st, char *name);
 char *pop(stack *st);
+char *getTokenName(char *token);
 
 #endif

@@ -158,10 +158,6 @@ token lexicalAnalysis() {
 		currentState = getNextDFAstate(dfaTable, currentChar, currentState);
 		strncpy(&previousChar, &currentChar, 1);
 
-		if (currentChar == '\n') {
-			lineCount++;
-		}
-
 		/* Ignore comments */
 		int isComment = isCommentState(currentState);
 		if (!isComment) {
@@ -201,6 +197,10 @@ token lexicalAnalysis() {
 					if (!(isLetterChar(currentChar) || isDigitChar(currentChar))) {
 						memset(lexem, 0, sizeof(TOKEN_MAX_LENGTH));
 					}
+
+					if (currentChar == '\n') {
+						lineCount++;
+					}
 					
 					return tk;
 				}
@@ -212,7 +212,11 @@ token lexicalAnalysis() {
 				return errTk;
 			}
 		}
+
 		previousState = currentState;
+		if (currentChar == '\n') {
+			lineCount++;
+		}
 	}
 
 	/* Check last character from file */

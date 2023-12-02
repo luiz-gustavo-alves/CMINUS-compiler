@@ -12,7 +12,7 @@ static int currentState = 0;
 static int previousState = 0;
 static int lineCount = 1;
 static int lastLineCount = 1;
-static int lexicalError = 1;
+static int lexicalError = 0;
 
 static char currentChar = '\0';
 static char previousChar = '\0';

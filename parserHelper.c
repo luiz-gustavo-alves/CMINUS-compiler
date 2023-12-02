@@ -27,3 +27,10 @@ char *pop(stack *st) {
     free(st_old_top);
 	return name;
 }
+
+char *getTokenName(char *token) { 
+
+  char *tokenName = malloc(strlen(token) + 1);
+  strcpy(tokenName, token);
+  return tokenName;
+}
