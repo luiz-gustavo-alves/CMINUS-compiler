@@ -198,7 +198,10 @@ token lexicalAnalysis() {
 					currentState = getNextDFAstate(dfaTable, currentChar, currentState);
 					previousState = currentState;
 
-					if (currentChar == '\n') lineCount++;
+					if (currentChar == '\n') {
+						lineCount++;
+						printf("\n");
+					}
 					if (!(isLetterChar(currentChar) || isDigitChar(currentChar))) {
 						memset(lexem, 0, sizeof(TOKEN_MAX_LENGTH));
 					}
@@ -215,7 +218,10 @@ token lexicalAnalysis() {
 		}
 
 		previousState = currentState;
-		if (currentChar == '\n') lineCount++;
+		if (currentChar == '\n') {
+			lineCount++;
+			printf("\n");
+		}
 	}
 
 	struct token END = { .type = 256 };

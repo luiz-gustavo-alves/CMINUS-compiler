@@ -1,6 +1,8 @@
 #include "utils.h"
 #include "syntaxTree.h"
 #include "scanner.h"
+#include "symtab.h"
+#include "analyze.h"
 
 void initializeGlobals() {
 	memset(lexem, 0, sizeof(TOKEN_MAX_LENGTH));
@@ -32,6 +34,15 @@ int main(int argc, char *argv[]) {
 	if (!lexicalError && !syntaxError) {
 		printf("\n\n* * * * * ARVORE DE ANALISE SINTATICA * * * * *\n\n");
 		printSyntaxTree(syntaxTree);
+
+		printf("* * * * * ANALISE SEMANTICA * * * * *\n");
+		sym_tab_build(syntaxTree);
+	}
+
+	if (!semanticError) {
+
+		printf("\n\n* * * * * TABELA DE SIMBOLOS * * * * *\n\n");
+		print_sym_tab();
 	}
 	
 	return 0;

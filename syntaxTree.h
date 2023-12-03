@@ -3,14 +3,13 @@
 
 #define CHILD_MAX_NODES 3
 
+#include "utils.h"
+
 /* Tokens types: decl (declaration), exp (expression), stmt (statement)*/
 typedef enum { decl, exp, stmt } nodeType;
 typedef enum { declFunc, declVar, declIdType } declType;
 typedef enum { expId, expNum, expOp } expType;
 typedef enum { stmtAttrib, stmtFunc, stmtIf, stmtReturn, stmtWhile } stmtType;
-
-/* Primitive data types */
-typedef enum { Array, Boolean, Integer, Void } primitiveType;
 
 /* Operation types (+) (-) (*) (/) (=) (<) (>) (<=) (>=) (!=) (==) */
 typedef enum { plus, minus, mult, slash, assign, lt, gt, lte, gte, dif, equal } opType;

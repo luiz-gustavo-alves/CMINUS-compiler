@@ -2290,7 +2290,6 @@ int yylex() {
   }
 
   if (tk.type == 256) {
-    printf("a: %s", lastToken);
     return YYEOF;
   }
 
