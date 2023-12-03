@@ -14,6 +14,7 @@ void initializeGlobals() {
  	lineCount = 1;
 	lexicalError = 0;
 	syntaxError = 0;
+	semanticError = 0;
 }
 
 int main(int argc, char *argv[]) {
@@ -29,6 +30,7 @@ int main(int argc, char *argv[]) {
 
 	printf("\n* * * * * ANALISE LEXICA E SINTATICA * * * * *\n\n");
 	syntaxTree = parse();
+
 	fclose(file);
 
 	if (!lexicalError && !syntaxError) {
@@ -40,10 +42,9 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (!semanticError) {
-
 		printf("\n\n* * * * * TABELA DE SIMBOLOS * * * * *\n\n");
 		print_sym_tab();
 	}
-	
+
 	return 0;
 }

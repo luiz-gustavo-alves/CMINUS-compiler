@@ -47,8 +47,8 @@ void tree_insert_node(treeNode *tree) {
 							else {
 								
 		                        if (check_declared_func(tree->key.name) == 0) {
-			
-		                            sym_tab_insert(tree->key.name, tree->line, "global", tree->type, IS_FUNC);
+									
+									sym_tab_insert(tree->key.name, tree->line, "global", tree->type, IS_FUNC);
 		                            cur_var_scope = tree->key.name;
 		                        } 
 								else {
@@ -75,11 +75,14 @@ void tree_insert_node(treeNode *tree) {
 	
 	                    if (check_declared_var(tree->key.name) == 0) {
 		
-	                        if (tree->child[0] == NULL) 
+	                        if (tree->child[0] == NULL) {
 								sym_tab_insert(tree->key.name, tree->line, cur_var_scope, tree->type, NOT_FUNC);
+							}
 	
-	                        else 
+	                        else {
+								
 								sym_tab_insert(tree->key.name, tree->line, cur_var_scope, tree->type, NOT_FUNC);
+							}
 	
 	                    } else {
 		
@@ -87,11 +90,15 @@ void tree_insert_node(treeNode *tree) {
 		
 	                            if (check_declared_var_scope(tree->key.name, cur_var_scope) == 0) {
 		
-	                                if (tree->child[0] == NULL)
-	                                    sym_tab_insert(tree->key.name, tree->line, cur_var_scope, tree->type, NOT_FUNC);
+	                                if (tree->child[0] == NULL) {
+										
+										sym_tab_insert(tree->key.name, tree->line, cur_var_scope, tree->type, NOT_FUNC);
+									}
 	
-	                                else
-	                                    sym_tab_insert(tree->key.name, tree->line, cur_var_scope, tree->type, NOT_FUNC);
+	                                else {
+										
+										sym_tab_insert(tree->key.name, tree->line, cur_var_scope, tree->type, NOT_FUNC);
+									}
 	                            } 
 								else {
 		
@@ -127,7 +134,8 @@ void tree_insert_node(treeNode *tree) {
 		
 	                        get_func_kind(tree->key.name, type);
 	                        tree->type = *type;
-	                        sym_tab_insert(tree->key.name, tree->line, "global", tree->type, IS_FUNC);
+							
+							sym_tab_insert(tree->key.name, tree->line, "global", tree->type, IS_FUNC);
 	                    }
 	                break;
 	            }
@@ -151,7 +159,8 @@ void tree_insert_node(treeNode *tree) {
 									get_var_kind(tree->key.name, cur_var_scope, type);
 	                                
 									if (tree->type == Void) tree->type = *type;
-	                                sym_tab_insert(tree->key.name, tree->line, cur_var_scope, tree->type, NOT_FUNC);
+									
+									sym_tab_insert(tree->key.name, tree->line, cur_var_scope, tree->type, NOT_FUNC);
 	                            } 
 								else {
 				
@@ -165,7 +174,8 @@ void tree_insert_node(treeNode *tree) {
 	                                    get_var_kind(tree->key.name, "global", type);
 	                                    
 	                                    if (tree->type == Void) tree->type = *type;
-	                                    sym_tab_insert(tree->key.name, tree->line, "global", tree->type, NOT_FUNC);
+										
+										sym_tab_insert(tree->key.name, tree->line, "global", tree->type, NOT_FUNC);
 	                                }
 	                            }
 	                        }
@@ -224,13 +234,12 @@ void verify_nodes(treeNode *tree) {
 	                    
 	                tree->type = Integer;
 	
-	                if ((tree->key.op == TOKEN_EQUAL) ||
-	                    (tree->key.op == TOKEN_DIF)   || 
-	                    (tree->key.op == TOKEN_LT)    || 
-	                    (tree->key.op == TOKEN_LTE)   || 
-	                    (tree->key.op == TOKEN_GT)    || 
-	                    (tree->key.op == TOKEN_GTE)) {
-							
+	                if ((strcmp(tokenNames[1][tree->key.op - 1], "EQUAL") == 0) ||
+	                    ((strcmp(tokenNames[1][tree->key.op - 1], "DIF")) == 0)   || 
+	                    ((strcmp(tokenNames[1][tree->key.op - 1], "LT")) == 0)    || 
+	                    ((strcmp(tokenNames[1][tree->key.op - 1], "LTE")) == 0)   || 
+	                    ((strcmp(tokenNames[1][tree->key.op - 1], "GT")) == 0)    || 
+	                    ((strcmp(tokenNames[1][tree->key.op - 1], "GTE")) == 0)) {
 						tree->type = Boolean;
 					}
 	                else

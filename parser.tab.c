@@ -538,13 +538,13 @@ static const yytype_int8 yytranslate[] =
 static const yytype_int16 yyrline[] =
 {
        0,    51,    51,    53,    62,    64,    64,    66,    66,    77,
-      77,    97,   101,   106,   106,   122,   123,   129,   138,   140,
-     151,   151,   166,   176,   185,   187,   196,   198,   199,   200,
-     201,   202,   204,   204,   206,   211,   218,   224,   227,   232,
-     239,   241,   248,   248,   259,   265,   267,   271,   275,   279,
-     283,   287,   292,   298,   300,   304,   309,   315,   317,   321,
-     326,   327,   328,   329,   335,   335,   345,   345,   347,   356,
-     357
+      77,    96,   100,   105,   105,   121,   122,   128,   137,   139,
+     150,   150,   165,   175,   184,   186,   195,   197,   198,   199,
+     200,   201,   203,   203,   205,   210,   217,   223,   226,   231,
+     238,   240,   247,   247,   258,   264,   266,   270,   274,   278,
+     282,   286,   291,   297,   299,   303,   308,   314,   316,   320,
+     325,   326,   327,   328,   334,   334,   344,   344,   346,   355,
+     356
 };
 #endif
 
@@ -1473,13 +1473,12 @@ yyreduce:
 #line 77 "parser.y"
                                       { 
                 expName = getTokenName(tokenID);
-  
               }
-#line 1479 "parser.tab.c"
+#line 1478 "parser.tab.c"
     break;
 
   case 10:
-#line 81 "parser.y"
+#line 80 "parser.y"
                                                    { 
                   yyval = yyvsp[-6];
                   YYSTYPE expNode = createExpNode(expNum);
@@ -1495,38 +1494,38 @@ yyreduce:
                   else declNode->type = Void;            
                   yyval->child[0] = declNode;
                 }
-#line 1499 "parser.tab.c"
+#line 1498 "parser.tab.c"
     break;
 
   case 11:
-#line 97 "parser.y"
+#line 96 "parser.y"
                { 
               yyval = createDeclNode(declIdType); 
               yyval->type = Integer;
             }
-#line 1508 "parser.tab.c"
+#line 1507 "parser.tab.c"
     break;
 
   case 12:
-#line 101 "parser.y"
+#line 100 "parser.y"
                                      { 
               yyval = createDeclNode(declIdType); 
               yyval->type = Void; 
             }
-#line 1517 "parser.tab.c"
+#line 1516 "parser.tab.c"
     break;
 
   case 13:
-#line 106 "parser.y"
+#line 105 "parser.y"
                                 {
                 functionName = getTokenName(tokenID);
                 functionCurrentLine = lineCount;
               }
-#line 1526 "parser.tab.c"
+#line 1525 "parser.tab.c"
     break;
 
   case 14:
-#line 110 "parser.y"
+#line 109 "parser.y"
                                                {
 				        yyval = yyvsp[-6];
                 YYSTYPE declNode = createDeclNode(declFunc);
@@ -1538,27 +1537,27 @@ yyreduce:
                 declNode->type = yyvsp[-6]->type;                
                 yyval->child[0] = declNode;
               }
-#line 1542 "parser.tab.c"
+#line 1541 "parser.tab.c"
     break;
 
   case 15:
-#line 122 "parser.y"
+#line 121 "parser.y"
                      { yyval = yyvsp[0]; }
-#line 1548 "parser.tab.c"
+#line 1547 "parser.tab.c"
     break;
 
   case 16:
-#line 123 "parser.y"
+#line 122 "parser.y"
                              { 
 			      yyval = createExpNode(expId); 
 			      yyval->key.name = "void"; 
 			      yyval->type = Void; 
 		      }
-#line 1558 "parser.tab.c"
+#line 1557 "parser.tab.c"
     break;
 
   case 17:
-#line 129 "parser.y"
+#line 128 "parser.y"
                                     {                 
 				        YYSTYPE node = yyvsp[-2];
                 if (node != NULL) {
@@ -1568,17 +1567,17 @@ yyreduce:
                 }
                 else yyval = yyvsp[0];
               }
-#line 1572 "parser.tab.c"
+#line 1571 "parser.tab.c"
     break;
 
   case 18:
-#line 138 "parser.y"
+#line 137 "parser.y"
                                       { yyval = yyvsp[0]; }
-#line 1578 "parser.tab.c"
+#line 1577 "parser.tab.c"
     break;
 
   case 19:
-#line 140 "parser.y"
+#line 139 "parser.y"
                           {
             yyval = yyvsp[-1];
             expName = getTokenName(tokenID);
@@ -1591,19 +1590,19 @@ yyreduce:
             
             yyval->child[0] = declNode;
           }
-#line 1595 "parser.tab.c"
+#line 1594 "parser.tab.c"
     break;
 
   case 20:
-#line 151 "parser.y"
+#line 150 "parser.y"
                                   {
             expName = getTokenName(tokenID);
           }
-#line 1603 "parser.tab.c"
+#line 1602 "parser.tab.c"
     break;
 
   case 21:
-#line 154 "parser.y"
+#line 153 "parser.y"
                               {    
             yyval = yyvsp[-4];
             YYSTYPE declNode = createDeclNode(declVar);
@@ -1615,11 +1614,11 @@ yyreduce:
             else declNode->type = yyvsp[-4]->type;
             yyval->child[0] = declNode;
           }
-#line 1619 "parser.tab.c"
+#line 1618 "parser.tab.c"
     break;
 
   case 22:
-#line 166 "parser.y"
+#line 165 "parser.y"
                                            { 
               YYSTYPE node = yyvsp[-2];                                
               if (node != NULL) {
@@ -1629,11 +1628,11 @@ yyreduce:
               }
               else yyval = yyvsp[-1];
             }
-#line 1633 "parser.tab.c"
+#line 1632 "parser.tab.c"
     break;
 
   case 23:
-#line 176 "parser.y"
+#line 175 "parser.y"
                                  {
                   YYSTYPE node = yyvsp[-1];                  
                   if (node != NULL) {
@@ -1643,17 +1642,17 @@ yyreduce:
                   }
                   else yyval = yyvsp[0];
                 }
-#line 1647 "parser.tab.c"
+#line 1646 "parser.tab.c"
     break;
 
   case 24:
-#line 185 "parser.y"
+#line 184 "parser.y"
                                           { yyval = NULL; }
-#line 1653 "parser.tab.c"
+#line 1652 "parser.tab.c"
     break;
 
   case 25:
-#line 187 "parser.y"
+#line 186 "parser.y"
                            {    
 				      YYSTYPE node = yyvsp[-1];                      
               if (node != NULL) {
@@ -1663,107 +1662,107 @@ yyreduce:
               }
               else yyval = yyvsp[0];
             }
-#line 1667 "parser.tab.c"
+#line 1666 "parser.tab.c"
     break;
 
   case 26:
-#line 196 "parser.y"
+#line 195 "parser.y"
                                       { yyval = NULL; }
-#line 1673 "parser.tab.c"
+#line 1672 "parser.tab.c"
     break;
 
   case 27:
-#line 198 "parser.y"
+#line 197 "parser.y"
                     { yyval = yyvsp[0]; }
-#line 1679 "parser.tab.c"
+#line 1678 "parser.tab.c"
     break;
 
   case 28:
-#line 199 "parser.y"
+#line 198 "parser.y"
                     { yyval = yyvsp[0]; }
-#line 1685 "parser.tab.c"
+#line 1684 "parser.tab.c"
     break;
 
   case 29:
-#line 200 "parser.y"
+#line 199 "parser.y"
                     { yyval = yyvsp[0]; }
-#line 1691 "parser.tab.c"
+#line 1690 "parser.tab.c"
     break;
 
   case 30:
-#line 201 "parser.y"
+#line 200 "parser.y"
                     { yyval = yyvsp[0]; }
-#line 1697 "parser.tab.c"
+#line 1696 "parser.tab.c"
     break;
 
   case 31:
-#line 202 "parser.y"
+#line 201 "parser.y"
                     { yyval = yyvsp[0]; }
-#line 1703 "parser.tab.c"
+#line 1702 "parser.tab.c"
     break;
 
   case 32:
-#line 204 "parser.y"
+#line 203 "parser.y"
                          { yyval = yyvsp[-1]; }
-#line 1709 "parser.tab.c"
+#line 1708 "parser.tab.c"
     break;
 
   case 33:
-#line 204 "parser.y"
+#line 203 "parser.y"
                                                   { yyval = NULL; }
-#line 1715 "parser.tab.c"
+#line 1714 "parser.tab.c"
     break;
 
   case 34:
-#line 206 "parser.y"
+#line 205 "parser.y"
                                         { 
                 yyval = createStmtNode(stmtIf);
                 yyval->child[0] = yyvsp[-2];
                 yyval->child[1] = yyvsp[0];
               }
-#line 1725 "parser.tab.c"
+#line 1724 "parser.tab.c"
     break;
 
   case 35:
-#line 211 "parser.y"
+#line 210 "parser.y"
                                                       { 
                 yyval = createStmtNode(stmtIf);
                 yyval->child[0] = yyvsp[-4];
                 yyval->child[1] = yyvsp[-2];
                 yyval->child[2] = yyvsp[0];
               }
-#line 1736 "parser.tab.c"
+#line 1735 "parser.tab.c"
     break;
 
   case 36:
-#line 218 "parser.y"
+#line 217 "parser.y"
                                            { 
               yyval = createStmtNode(stmtWhile);
               yyval->child[0] = yyvsp[-2];
               yyval->child[1] = yyvsp[0];
             }
-#line 1746 "parser.tab.c"
+#line 1745 "parser.tab.c"
     break;
 
   case 37:
-#line 224 "parser.y"
+#line 223 "parser.y"
                                { 
                 yyval = createStmtNode(stmtReturn);
               }
-#line 1754 "parser.tab.c"
+#line 1753 "parser.tab.c"
     break;
 
   case 38:
-#line 227 "parser.y"
+#line 226 "parser.y"
                                      {	
                 yyval = createStmtNode(stmtReturn);
                 yyval->child[0] = yyvsp[-1];
               }
-#line 1763 "parser.tab.c"
+#line 1762 "parser.tab.c"
     break;
 
   case 39:
-#line 232 "parser.y"
+#line 231 "parser.y"
                      { 
               yyval = createStmtNode(stmtAttrib);
               yyval->child[0] = yyvsp[-2];
@@ -1771,17 +1770,17 @@ yyreduce:
               yyval->type = Integer;
               yyval->key.op = ASSIGN; 
             }
-#line 1775 "parser.tab.c"
+#line 1774 "parser.tab.c"
     break;
 
   case 40:
-#line 239 "parser.y"
+#line 238 "parser.y"
                          { yyval = yyvsp[0]; }
-#line 1781 "parser.tab.c"
+#line 1780 "parser.tab.c"
     break;
 
   case 41:
-#line 241 "parser.y"
+#line 240 "parser.y"
                  { 
         expName = getTokenName(tokenID);
         yyval = createExpNode(expId);
@@ -1789,19 +1788,19 @@ yyreduce:
         yyval->line = currentLine;
         yyval->type = Void;
       }
-#line 1793 "parser.tab.c"
+#line 1792 "parser.tab.c"
     break;
 
   case 42:
-#line 248 "parser.y"
+#line 247 "parser.y"
                    { 
         variableName = getTokenName(tokenID);
       }
-#line 1801 "parser.tab.c"
+#line 1800 "parser.tab.c"
     break;
 
   case 43:
-#line 251 "parser.y"
+#line 250 "parser.y"
                             {
         yyval = createExpNode(expId);
         yyval->key.name = variableName;
@@ -1809,211 +1808,211 @@ yyreduce:
         yyval->child[0] = yyvsp[-1];
         yyval->type = Integer; 
       }
-#line 1813 "parser.tab.c"
+#line 1812 "parser.tab.c"
     break;
 
   case 44:
-#line 259 "parser.y"
+#line 258 "parser.y"
                                       {
                 yyval = createExpNode(expOp);  
                 yyval->child[0] = yyvsp[-2];
                 yyval->child[1] = yyvsp[0];
                 yyval->key.op = yyvsp[-1]->key.op; 
               }
-#line 1824 "parser.tab.c"
+#line 1823 "parser.tab.c"
     break;
 
   case 45:
-#line 265 "parser.y"
+#line 264 "parser.y"
                                                 { yyval = yyvsp[0]; }
-#line 1830 "parser.tab.c"
+#line 1829 "parser.tab.c"
     break;
 
   case 46:
-#line 267 "parser.y"
+#line 266 "parser.y"
                { 
               yyval = createExpNode(expId); 
               yyval->key.op = LTE; 
             }
-#line 1839 "parser.tab.c"
+#line 1838 "parser.tab.c"
     break;
 
   case 47:
-#line 271 "parser.y"
+#line 270 "parser.y"
                  { 
               yyval = createExpNode(expId); 
               yyval->key.op = LT; 
             }
-#line 1848 "parser.tab.c"
+#line 1847 "parser.tab.c"
     break;
 
   case 48:
-#line 275 "parser.y"
+#line 274 "parser.y"
                  { 
               yyval = createExpNode(expId); 
               yyval->key.op = GT; 
             }
-#line 1857 "parser.tab.c"
+#line 1856 "parser.tab.c"
     break;
 
   case 49:
-#line 279 "parser.y"
+#line 278 "parser.y"
                   { 
               yyval = createExpNode(expId); 
               yyval->key.op = GTE; 
             }
-#line 1866 "parser.tab.c"
+#line 1865 "parser.tab.c"
     break;
 
   case 50:
-#line 283 "parser.y"
+#line 282 "parser.y"
                     {
               yyval = createExpNode(expId); 
               yyval->key.op = EQUAL; 
             }
-#line 1875 "parser.tab.c"
+#line 1874 "parser.tab.c"
     break;
 
   case 51:
-#line 287 "parser.y"
+#line 286 "parser.y"
                   {
               yyval = createExpNode(expId); 
               yyval->key.op = DIF; 
             }
-#line 1884 "parser.tab.c"
+#line 1883 "parser.tab.c"
     break;
 
   case 52:
-#line 292 "parser.y"
+#line 291 "parser.y"
                            { 
               yyval = createExpNode(expOp);
               yyval->child[0] = yyvsp[-2];
               yyval->child[1] = yyvsp[0];
               yyval->key.op = yyvsp[-1]->key.op; 
             }
-#line 1895 "parser.tab.c"
+#line 1894 "parser.tab.c"
     break;
 
   case 53:
-#line 298 "parser.y"
+#line 297 "parser.y"
                                      { yyval = yyvsp[0]; }
-#line 1901 "parser.tab.c"
+#line 1900 "parser.tab.c"
     break;
 
   case 54:
-#line 300 "parser.y"
+#line 299 "parser.y"
            {
           yyval = createExpNode(expId); 
           yyval->key.op = PLUS; 
         }
-#line 1910 "parser.tab.c"
+#line 1909 "parser.tab.c"
     break;
 
   case 55:
-#line 304 "parser.y"
+#line 303 "parser.y"
                 {
           yyval = createExpNode(expId); 
           yyval->key.op = MINUS;
         }
-#line 1919 "parser.tab.c"
+#line 1918 "parser.tab.c"
     break;
 
   case 56:
-#line 309 "parser.y"
+#line 308 "parser.y"
                         {
             yyval = createExpNode(expOp);
             yyval->child[0] = yyvsp[-2];
             yyval->child[1] = yyvsp[0];
             yyval->key.op = yyvsp[-1]->key.op; 
           }
-#line 1930 "parser.tab.c"
+#line 1929 "parser.tab.c"
     break;
 
   case 57:
-#line 315 "parser.y"
+#line 314 "parser.y"
                                { yyval = yyvsp[0]; }
-#line 1936 "parser.tab.c"
+#line 1935 "parser.tab.c"
     break;
 
   case 58:
-#line 317 "parser.y"
+#line 316 "parser.y"
             { 
           yyval = createExpNode(expId); 
           yyval->key.op = MULT;
         }
-#line 1945 "parser.tab.c"
+#line 1944 "parser.tab.c"
     break;
 
   case 59:
-#line 321 "parser.y"
+#line 320 "parser.y"
                 {
           yyval = createExpNode(expId); 
           yyval->key.op = SLASH;
         }
-#line 1954 "parser.tab.c"
+#line 1953 "parser.tab.c"
     break;
 
   case 60:
-#line 326 "parser.y"
+#line 325 "parser.y"
                              { yyval = yyvsp[-2]; }
-#line 1960 "parser.tab.c"
+#line 1959 "parser.tab.c"
     break;
 
   case 61:
-#line 327 "parser.y"
+#line 326 "parser.y"
               { yyval = yyvsp[0]; }
-#line 1966 "parser.tab.c"
+#line 1965 "parser.tab.c"
     break;
 
   case 62:
-#line 328 "parser.y"
+#line 327 "parser.y"
                    { yyval = yyvsp[0]; }
-#line 1972 "parser.tab.c"
+#line 1971 "parser.tab.c"
     break;
 
   case 63:
-#line 329 "parser.y"
+#line 328 "parser.y"
                  { 
           yyval = createExpNode(expNum);
           yyval->key.value = atoi(tokenNUM);
           yyval->type = Integer;
         }
-#line 1982 "parser.tab.c"
+#line 1981 "parser.tab.c"
     break;
 
   case 64:
-#line 335 "parser.y"
+#line 334 "parser.y"
                       {
             insertNode(&list, getTokenName(tokenID));
           }
-#line 1990 "parser.tab.c"
+#line 1989 "parser.tab.c"
     break;
 
   case 65:
-#line 338 "parser.y"
+#line 337 "parser.y"
                                     {   
               yyval = createStmtNode(stmtFunc);
               yyval->child[1] = yyvsp[-1]; 
               yyval->key.name = getLastNode(&list);
               yyval->line = currentLine;
             }
-#line 2001 "parser.tab.c"
+#line 2000 "parser.tab.c"
     break;
 
   case 66:
-#line 345 "parser.y"
+#line 344 "parser.y"
                      { yyval = yyvsp[0]; }
-#line 2007 "parser.tab.c"
+#line 2006 "parser.tab.c"
     break;
 
   case 67:
-#line 345 "parser.y"
+#line 344 "parser.y"
                                     { yyval = NULL; }
-#line 2013 "parser.tab.c"
+#line 2012 "parser.tab.c"
     break;
 
   case 68:
-#line 347 "parser.y"
+#line 346 "parser.y"
                               { 
                 YYSTYPE node = yyvsp[-2];
                 if (node != NULL) {
@@ -2023,23 +2022,23 @@ yyreduce:
                 }
                 else yyval = yyvsp[0];
               }
-#line 2027 "parser.tab.c"
+#line 2026 "parser.tab.c"
     break;
 
   case 69:
-#line 356 "parser.y"
+#line 355 "parser.y"
                                       { yyval = yyvsp[0]; }
-#line 2033 "parser.tab.c"
+#line 2032 "parser.tab.c"
     break;
 
   case 70:
-#line 357 "parser.y"
+#line 356 "parser.y"
                                       { yyval = yyvsp[0]; }
-#line 2039 "parser.tab.c"
+#line 2038 "parser.tab.c"
     break;
 
 
-#line 2043 "parser.tab.c"
+#line 2042 "parser.tab.c"
 
       default: break;
     }
@@ -2271,7 +2270,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 359 "parser.y"
+#line 358 "parser.y"
 
 
 int yylex() {

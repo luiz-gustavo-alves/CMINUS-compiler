@@ -220,7 +220,6 @@ token lexicalAnalysis() {
 
 		previousState = currentState;
 		if (previousChar == '\n') {
-			printf("(p %c )\n", currentChar);
 			lineCount++;
 			printf("\n");
 		}

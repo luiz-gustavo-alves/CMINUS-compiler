@@ -81,7 +81,7 @@ int isLetterState(int state);
 int isDigitState(int state);
 int isCommentState(int state);
 int getNextDFAstate(int dfaTable[DFA_STATES_COUNT][DFA_TRANSITIONS_COUNT], char c, int state);
-token getToken();
+token getToken(int finalState);
 token lexicalAnalysis();
 
 #endif /* SCANNER_H */

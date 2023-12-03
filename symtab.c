@@ -13,7 +13,6 @@ int hash_table(char * key) {
         tmp = ((tmp << SHIFT) + key[i]) % HASHTABLE_LEN; 
 		i++;
     }
-    printf("( %s | %d)\n", key, tmp);
     return tmp;
 }
 
@@ -31,7 +30,6 @@ void sym_tab_insert(char *name, int line_number, char *cur_var_scope, primitiveT
    		hash_value = hash_value->next;
 
     if (hash_value == NULL) {
-        
 		hash_value = (Bucket_list) malloc(sizeof(struct Bucket_list));
         
         hash_value->name = name;
@@ -40,14 +38,14 @@ void sym_tab_insert(char *name, int line_number, char *cur_var_scope, primitiveT
 
         if (!is_function) hash_value->num_id = ++var_count;
 
-        if (strcmp(cur_var_scope, "global") == 0) {
-	
+        if (strcmp(cur_var_scope, "global") == 1) {
             char* scope_global = malloc(sizeof(char));
             strcat(scope_global, "global");
             hash_value->var_scope = scope_global;
         } 
-		else
-            hash_value->var_scope = cur_var_scope;
+		else {
+             hash_value->var_scope = cur_var_scope;
+        }
 
         hash_value->block_type = is_function;
         hash_value->lines->next = NULL;
@@ -57,7 +55,6 @@ void sym_tab_insert(char *name, int line_number, char *cur_var_scope, primitiveT
         hashtable[hash_key] = hash_value; 
     } 
 	else {
- 
         Line_list hash_lines = hash_value->lines;
         
         while (hash_lines->next != NULL)
