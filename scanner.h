@@ -17,8 +17,6 @@ static char previousChar = '\0';
 char lexem[TOKEN_MAX_LENGTH];
 char tokenID[TOKEN_MAX_LENGTH]; 
 char tokenNUM[TOKEN_MAX_LENGTH];
-char tokenRESERVED[TOKEN_MAX_LENGTH];
-char tokenSYMBOL[TOKEN_MAX_LENGTH];
 
 static int dfaTable[DFA_STATES_COUNT][DFA_TRANSITIONS_COUNT] = {
     {1, 5, 11, 15, 19, 44, 44, 44, 44, 44, 44, 44, 44, 44, 24, 25, 26, 27, 33, 34, 31, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, -1},

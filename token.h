@@ -4,7 +4,6 @@
 typedef struct token {
   int type;
   int line;
-  char *name;
 } token;
 
 #define TOKEN_IF 1

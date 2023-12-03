@@ -3,6 +3,7 @@
 #include "token.h"
 
 #include <ctype.h>
+#include <limits.h>
 
 int isSpecialChar(char c) {
 	return (isspace(c) || c == '\n' || c == '\0' || c == '\t');
@@ -118,32 +119,32 @@ int getTokenType(int finalState) {
 	}
 
 	switch (finalState) {
-		case 2: strncpy(tokenSYMBOL, "IF", TOKEN_MAX_LENGTH); return TOKEN_IF;
-		case 4: strncpy(tokenSYMBOL, "INT", TOKEN_MAX_LENGTH); return TOKEN_INT;
-		case 10: strncpy(tokenSYMBOL, "RETURN", TOKEN_MAX_LENGTH); return TOKEN_RETURN;
-		case 14: strncpy(tokenSYMBOL, "VOID", TOKEN_MAX_LENGTH); return TOKEN_VOID;
-		case 18: strncpy(tokenSYMBOL, "ELSE", TOKEN_MAX_LENGTH); return TOKEN_ELSE;
-		case 23: strncpy(tokenSYMBOL, "WHILE", TOKEN_MAX_LENGTH); return TOKEN_WHILE;
-		case 24: strncpy(tokenSYMBOL, "+", TOKEN_MAX_LENGTH); return TOKEN_PLUS;
-		case 25: strncpy(tokenSYMBOL, "-", TOKEN_MAX_LENGTH); return TOKEN_MINUS;
-		case 26: strncpy(tokenSYMBOL, "*", TOKEN_MAX_LENGTH); return TOKEN_MULT;
-		case 27: strncpy(tokenSYMBOL, "/", TOKEN_MAX_LENGTH); return TOKEN_SLASH;
-		case 31: strncpy(tokenSYMBOL, "=", TOKEN_MAX_LENGTH); return TOKEN_ASSIGN;
-		case 32: strncpy(tokenSYMBOL, "==", TOKEN_MAX_LENGTH); return TOKEN_EQUAL;
-		case 33: strncpy(tokenSYMBOL, "<", TOKEN_MAX_LENGTH); return TOKEN_LT;
-		case 34: strncpy(tokenSYMBOL, ">", TOKEN_MAX_LENGTH); return TOKEN_GT;
-		case 36: strncpy(tokenSYMBOL, ";", TOKEN_MAX_LENGTH); return TOKEN_SEMICOLON;
-		case 37: strncpy(tokenSYMBOL, ",", TOKEN_MAX_LENGTH); return TOKEN_COMMA;
-		case 38: strncpy(tokenSYMBOL, "(", TOKEN_MAX_LENGTH); return TOKEN_OPARENT;
-		case 39: strncpy(tokenSYMBOL, ")", TOKEN_MAX_LENGTH); return TOKEN_CPARENT;
-		case 40: strncpy(tokenSYMBOL, "[", TOKEN_MAX_LENGTH); return TOKEN_OBRACKET;
-		case 41: strncpy(tokenSYMBOL, "]", TOKEN_MAX_LENGTH); return TOKEN_CBRACKET;
-		case 42: strncpy(tokenSYMBOL, "{", TOKEN_MAX_LENGTH); return TOKEN_OKEY;
-		case 43: strncpy(tokenSYMBOL, "}", TOKEN_MAX_LENGTH); return TOKEN_CKEY;
-		case 46: strncpy(tokenSYMBOL, "<=", TOKEN_MAX_LENGTH); return TOKEN_LTE;
-		case 47: strncpy(tokenSYMBOL, ">=", TOKEN_MAX_LENGTH); return TOKEN_GTE;
-		case 48: strncpy(tokenSYMBOL, "!=", TOKEN_MAX_LENGTH); return TOKEN_DIF;
-		default: strncpy(tokenSYMBOL, "ERROR", TOKEN_MAX_LENGTH); return 0;
+		case 2: return TOKEN_IF;
+		case 4: return TOKEN_INT;
+		case 10: return TOKEN_RETURN;
+		case 14: return TOKEN_VOID;
+		case 18: return TOKEN_ELSE;
+		case 23: return TOKEN_WHILE;
+		case 24: return TOKEN_PLUS;
+		case 25: return TOKEN_MINUS;
+		case 26: return TOKEN_MULT;
+		case 27: return TOKEN_SLASH;
+		case 31: return TOKEN_ASSIGN;
+		case 32: return TOKEN_EQUAL;
+		case 33: return TOKEN_LT;
+		case 34: return TOKEN_GT;
+		case 36: return TOKEN_SEMICOLON;
+		case 37: return TOKEN_COMMA;
+		case 38: return TOKEN_OPARENT;
+		case 39: return TOKEN_CPARENT;
+		case 40: return TOKEN_OBRACKET;
+		case 41: return TOKEN_CBRACKET;
+		case 42: return TOKEN_OKEY;
+		case 43: return TOKEN_CKEY;
+		case 46: return TOKEN_LTE;
+		case 47: return TOKEN_GTE;
+		case 48: return TOKEN_DIF;
+		default: return 0;
 	}
 }
 
@@ -155,38 +156,50 @@ token getToken(int finalState) {
 	token.line = lineCount;
 
 	if (type == TOKEN_IDENTIFIER) {
-		printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][type - 1], tokenID);
-		token.name = tokenID;
+		printf("Linha: %d | Token: %s | Lexema: %s\n", lineCount, tokenNames[1][type - 1], tokenID);
 	}
 	else if (type == TOKEN_NUMBER) {
-		printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][type - 1], tokenNUM);
-		token.name = tokenNUM;
+		printf("Linha: %d | Token: %s | Lexema: %s\n", lineCount, tokenNames[1][type - 1], tokenNUM);
 	}
-	else {
-		printf("Linha: %d | Token: %s | Lexem: %s\n", lineCount, tokenNames[1][type - 1], tokenNames[0][type - 1]);
-		token.name = tokenSYMBOL;
+	else { 
+		printf("Linha: %d | Token: %s | Lexema: %s\n", lineCount, tokenNames[1][type - 1], tokenNames[0][type - 1]);
 	}
+
 	return token;
 }
 
 token lexicalAnalysis() {
 
 	struct token errTk = { 0 };
-
-	/* Lexical Analysis */
 	while ((currentChar = fgetc(file)) != EOF) {
 
 		/* Get new state from DFA table */
 		currentState = getNextDFAstate(dfaTable, currentChar, currentState);
 		strncpy(&previousChar, &currentChar, 1);
 
-		/* Ignore comments */
 		int isComment = isCommentState(currentState);
 		if (!isComment) {
 
-			/* Concat Lexem String */
+			/* Concat Lexem for IDENTIFIERS and NUMBERS tokens */
 			if ((isLetterChar(currentChar) || isDigitChar(currentChar))) {
 				strncat(lexem, &currentChar, 1);
+
+				if (isLetterChar(currentChar)) {
+
+					/* Check identifier name overflow */
+					if (strlen(lexem) > TOKEN_MAX_LENGTH) {
+						printf("(!) ERRO LEXICO: Tamanho maximo para identificadores excedido");
+						return errTk;
+					}
+				} else {
+
+					/* Check integer overflow */
+					long int number = strtol(lexem, NULL, 10);
+					if (number > INT_MAX) {
+						printf("(!) ERRO LEXICO: Tamanho maximo para representacao numerica inteira excedido");
+						return errTk;
+					}
+				}
 			}
 
 			/* Check if previous state is a Final State */
@@ -200,7 +213,6 @@ token lexicalAnalysis() {
 
 					if (currentChar == '\n') {
 						lineCount++;
-						printf("\n");
 					}
 
 					if (!(isLetterChar(currentChar) || isDigitChar(currentChar))) {
@@ -221,7 +233,6 @@ token lexicalAnalysis() {
 		previousState = currentState;
 		if (previousChar == '\n') {
 			lineCount++;
-			printf("\n");
 		}
 	}
 
@@ -233,7 +244,7 @@ token lexicalAnalysis() {
 	/* Check last character from file */
 	currentState = getNextDFAstate(dfaTable, previousChar, currentState);
 	if (isCommentState(currentState)) {
-		printf("(!) ERRO LEXICO: unterminated string");
+		printf("(!) ERRO LEXICO: literal de string nao terminada");
 		return errTk;
 	}
 
@@ -251,5 +262,6 @@ token lexicalAnalysis() {
 		}
 	}
 
+	/* Finish Lexical Analysis */
 	return END;
 }
