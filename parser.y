@@ -344,12 +344,14 @@ activate : IDENTIFIER {
             firstFunc = 0;
           }
             push(&functionStack, getTokenName(tokenID));
+            printf("!! %s\n", getTokenName(tokenID));
             currentLine = lineCount;
           }
           OPARENT arguments CPARENT {   
               $$ = createStmtNode(stmtFunc);
               $$->child[1] = $4; 
               $$->key.name = pop(&functionStack);
+              printf(" ( %s ) \n", $$->key.name);
               $$->line = currentLine;
             };
 
@@ -374,6 +376,10 @@ int yylex() {
   struct token tk = lexicalAnalysis(file);
   if (tk.type == 0) {
     lexicalError = 1;
+    return YYEOF;
+  }
+
+  if (tk.type == 256) {
     return YYEOF;
   }
 

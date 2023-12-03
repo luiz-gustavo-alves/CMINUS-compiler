@@ -29,7 +29,9 @@ int main(int argc, char *argv[]) {
 	syntaxTree = parse();
 	fclose(file);
 
-	if (!syntaxError) {
+	printf("%d %d", lexicalError, syntaxError);
+
+	if (!lexicalError && !syntaxError) {
 		printf("\n* * * * * ARVORE DE ANALISE SINTATICA * * * * *\n\n");
 		printSyntaxTree(syntaxTree);
 	}

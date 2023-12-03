@@ -171,7 +171,7 @@ token getToken(int finalState) {
 
 token lexicalAnalysis() {
 
-	struct token errTk = {0};
+	struct token errTk = { 0 };
 
 	/* Lexical Analysis */
 	while ((currentChar = fgetc(file)) != EOF) {
@@ -218,6 +218,11 @@ token lexicalAnalysis() {
 		if (currentChar == '\n') lineCount++;
 	}
 
+	struct token END = { .type = 256 };
+	if (isSpecialChar(previousChar)) {
+		return END;
+	}
+
 	/* Check last character from file */
 	currentState = getNextDFAstate(dfaTable, previousChar, currentState);
 	if (isCommentState(currentState)) {
@@ -232,11 +237,12 @@ token lexicalAnalysis() {
 
 	if (currentState == 0) {
 		int isFinalState = finalStates[previousState];
-		if (isFinalState) {
+		if (isFinalState)
+		{
 			struct token token = getToken(previousState);
 			return token;
 		}
 	}
 
-	return errTk;
+	return END;
 }

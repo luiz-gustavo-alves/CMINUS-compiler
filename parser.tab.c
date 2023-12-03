@@ -543,8 +543,8 @@ static const yytype_int16 yyrline[] =
      204,   205,   207,   207,   209,   214,   221,   227,   230,   235,
      242,   244,   253,   253,   265,   271,   273,   277,   281,   285,
      289,   293,   298,   304,   306,   310,   315,   321,   323,   327,
-     332,   333,   334,   335,   341,   341,   356,   356,   358,   367,
-     368
+     332,   333,   334,   335,   341,   341,   358,   358,   360,   369,
+     370
 };
 #endif
 
@@ -1995,36 +1995,38 @@ yyreduce:
             firstFunc = 0;
           }
             push(&functionStack, getTokenName(tokenID));
+            printf("!! %s\n", getTokenName(tokenID));
             currentLine = lineCount;
           }
-#line 2001 "parser.tab.c"
+#line 2002 "parser.tab.c"
     break;
 
   case 65:
-#line 349 "parser.y"
+#line 350 "parser.y"
                                     {   
               yyval = createStmtNode(stmtFunc);
               yyval->child[1] = yyvsp[-1]; 
               yyval->key.name = pop(&functionStack);
+              printf(" ( %s ) \n", yyval->key.name);
               yyval->line = currentLine;
             }
-#line 2012 "parser.tab.c"
+#line 2014 "parser.tab.c"
     break;
 
   case 66:
-#line 356 "parser.y"
+#line 358 "parser.y"
                      { yyval = yyvsp[0]; }
-#line 2018 "parser.tab.c"
+#line 2020 "parser.tab.c"
     break;
 
   case 67:
-#line 356 "parser.y"
+#line 358 "parser.y"
                                     { yyval = NULL; }
-#line 2024 "parser.tab.c"
+#line 2026 "parser.tab.c"
     break;
 
   case 68:
-#line 358 "parser.y"
+#line 360 "parser.y"
                               { 
                 YYSTYPE node = yyvsp[-2];
                 if (node != NULL) {
@@ -2034,23 +2036,23 @@ yyreduce:
                 }
                 else yyval = yyvsp[0];
               }
-#line 2038 "parser.tab.c"
+#line 2040 "parser.tab.c"
     break;
 
   case 69:
-#line 367 "parser.y"
+#line 369 "parser.y"
                                       { yyval = yyvsp[0]; }
-#line 2044 "parser.tab.c"
+#line 2046 "parser.tab.c"
     break;
 
   case 70:
-#line 368 "parser.y"
+#line 370 "parser.y"
                                       { yyval = yyvsp[0]; }
-#line 2050 "parser.tab.c"
+#line 2052 "parser.tab.c"
     break;
 
 
-#line 2054 "parser.tab.c"
+#line 2056 "parser.tab.c"
 
       default: break;
     }
@@ -2282,7 +2284,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 370 "parser.y"
+#line 372 "parser.y"
 
 
 int yylex() {
@@ -2290,6 +2292,10 @@ int yylex() {
   struct token tk = lexicalAnalysis(file);
   if (tk.type == 0) {
     lexicalError = 1;
+    return YYEOF;
+  }
+
+  if (tk.type == 256) {
     return YYEOF;
   }
 
