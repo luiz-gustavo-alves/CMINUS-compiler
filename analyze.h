@@ -6,9 +6,9 @@
 
 void semanticAnalysis(treeNode *tree);
 void preOrderTraversal(treeNode *tree);
-void checkPreOrderNode(treeNode *tree);
 void postOrderTraversal(treeNode *tree);
-void checkPostOrderNode(treeNode * tree);
-void throwSemanticError(treeNode *tree, char *msg);
+void checkNodesDeclaration(treeNode *tree);
+void checkNodesType(treeNode * tree);
+int throwSemanticError(treeNode *tree, char *msg);
 
 #endif /* ANALYZE_H */
