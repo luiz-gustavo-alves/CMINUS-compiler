@@ -41,6 +41,7 @@ int main(int argc, char *argv[]) {
 
 		printf("\n\n* * * * * ANALISE SEMANTICA * * * * *\n\n");
 		semanticAnalysis(syntaxTree);
+		printf("Fases de analise completas!");
 
 		if (!semanticError) {
 			printf("\n\n* * * * * TABELA DE SIMBOLOS * * * * *\n\n");

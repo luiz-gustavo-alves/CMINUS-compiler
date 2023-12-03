@@ -177,62 +177,56 @@ void preOrderTraversal(treeNode *tree) {
     }
 }
 
+int isBooleanOp(treeNode *tree) {
+	return (tree->key.op >= 11 && tree->key.op <= 16);
+}
+
+int validateExpOp(treeNode *tree) {
+	if ((tree->child[0]->type != Integer) || (tree->child[1]->type != Integer)) {
+		return throwSemanticError(tree, " Operacao entre nao inteiros.");
+	}
+	if (isBooleanOp(tree)) {
+		tree->type = Boolean;
+	}
+	else {
+		tree->type = Integer;
+	}
+}
+
+int validateStmtIf(treeNode *tree) {
+	if (tree->child[0]->type == Integer) {
+		return throwSemanticError(tree->child[0], "IF nao do tipo <boolean>."); 
+	}
+}
+
+int validateStmtAttrib(treeNode *tree) {
+	if (tree->child[0]->type != tree->child[1]->type) {
+		return throwSemanticError(tree->child[1], "Tipo da variavel e valor a ser atribuido nao condizentes.");
+	}
+}
+
+int validateStmtWhile(treeNode *tree) {
+	if (tree->child[0]->type == Integer) {
+		return throwSemanticError(tree->child[0], "WHILE nao do tipo <boolean>.");
+	}
+}
+
 void checkNodesType(treeNode *tree) {
-	
-    switch (tree->node) { 
 
-	    case exp:
-	
-	        switch (tree->subType.exp) {
-	
-	            case expOp:
-	
-	                if ((tree->child[0]->type != Integer) || (tree->child[1]->type != Integer))
-	                    throwSemanticError(tree, " Operacao entre nao inteiros.");
-	                else
-	                    tree->type = Integer;
-	                    
-	                tree->type = Integer;
-	
-	                if ((strcmp(tokenNames[1][tree->key.op - 1], "EQUAL") == 0) ||
-	                    ((strcmp(tokenNames[1][tree->key.op - 1], "DIF")) == 0)   || 
-	                    ((strcmp(tokenNames[1][tree->key.op - 1], "LT")) == 0)    || 
-	                    ((strcmp(tokenNames[1][tree->key.op - 1], "LTE")) == 0)   || 
-	                    ((strcmp(tokenNames[1][tree->key.op - 1], "GT")) == 0)    || 
-	                    ((strcmp(tokenNames[1][tree->key.op - 1], "GTE")) == 0)) {
-						tree->type = Boolean;
-					}
-	                else
-	                    tree->type = Integer;
+	if (!semanticError) {
 
-	           break;
-	        }
-	    break;
-
-	    case stmt:
-	
-	        switch (tree->subType.stmt) {
-	
-		        case stmtIf:
-		            
-					if (tree->child[0]->type == Integer) 
-						throwSemanticError(tree->child[0], "IF nao do tipo <boolean>."); 
-					break;
-
-		        case stmtAttrib:
-	
-		            if (tree->child[0]->type != tree->child[1]->type) 
-						throwSemanticError(tree->child[1], "Tipo da variavel e valor a ser atribuido nao condizentes.");
-		            break;
-
-		        case stmtWhile:
-	
-		            if (tree->child[0]->type == Integer) 
-						throwSemanticError(tree->child[0], "WHILE nao do tipo <boolean>.");
-		            break;
-		        }
-	    break;
-    }
+		if (tree->node == exp && tree->subType.exp == expOp) {
+			validateExpOp(tree);
+		} else if (tree->node == stmt) {
+			
+			switch (tree->subType.stmt) {
+				case stmtIf: validateStmtIf(tree); break;
+				case stmtAttrib: validateStmtAttrib(tree); break;
+				case stmtWhile: validateStmtWhile(tree); break;
+				default: break;
+			}
+		}
+	}
 }
 
 int throwSemanticError(treeNode *tree, char *msg) {
