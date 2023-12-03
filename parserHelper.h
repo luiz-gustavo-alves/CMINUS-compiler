@@ -7,17 +7,15 @@
 int yylex();
 int yyerror(char *errorMsg);
 
-typedef struct stack {
+typedef struct callList {
 	
 	char *name;
-	struct stack *next;
-	struct stack *top;
-} stack;
+	struct callList *next;
+} callList;
 
 /* Metodos para estrutura de dados Pilha */
-void initStack(stack *st);
-void push(stack *st, char *name);
-char *pop(stack *st);
+void insertNode(callList *list, char *name);
+char *getLastNode(callList *list);
 char *getTokenName(char *token);
 
 #endif

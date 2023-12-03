@@ -5,16 +5,16 @@
   #include "syntaxTree.h"
   #include "parserHelper.h"
 
-  char *expName; 
-  char *variableName; 
+  char *expName;
+  char *variableName;
   char *functionName;
+  char *lastToken;
 
   int currentLine = 1;
   int functionCurrentLine = 1;
-  int firstFunc = 1;
-  	
-	stack functionStack;
+
   treeNode *tree;
+  callList list;
 %}
 
 %token IF 1
@@ -106,7 +106,7 @@ exp_type : INT {
 
 func_decl : exp_type IDENTIFIER {
                 functionName = getTokenName(tokenID);
-                functionCurrentLine = lineCount;
+                currentLine = lineCount;
               }
               OPARENT params CPARENT bloc_decl {
 				        $$ = $1;
@@ -115,7 +115,7 @@ func_decl : exp_type IDENTIFIER {
                 declNode->child[0] = $5;
                 declNode->child[1] = $7;
                 declNode->key.name = functionName;
-                declNode->line = functionCurrentLine;
+                declNode->line = currentLine;
                 declNode->type = $1->type;                
                 $$->child[0] = declNode;
               };
@@ -339,19 +339,13 @@ factor : OPARENT exp CPARENT { $$ = $1; }
         };
 
 activate : IDENTIFIER {
-			    if (firstFunc) {
-            initStack(&functionStack);
-            firstFunc = 0;
-          }
-            push(&functionStack, getTokenName(tokenID));
-            printf("!! %s\n", getTokenName(tokenID));
+            insertNode(&list, getTokenName(tokenID));
             currentLine = lineCount;
           }
           OPARENT arguments CPARENT {   
               $$ = createStmtNode(stmtFunc);
               $$->child[1] = $4; 
-              $$->key.name = pop(&functionStack);
-              printf(" ( %s ) \n", $$->key.name);
+              $$->key.name = getLastNode(&list);
               $$->line = currentLine;
             };
 
@@ -380,14 +374,15 @@ int yylex() {
   }
 
   if (tk.type == 256) {
+    printf("a: %s", lastToken);
     return YYEOF;
   }
 
+  lastToken = getTokenName(tokenNames[0][tk.type - 1]);
   return tk.type;
 }
 
 treeNode *parse() { 
-
 
 	yyparse(); 
 	return tree; 
@@ -395,8 +390,8 @@ treeNode *parse() {
 
 int yyerror(char *errorMsg) {
 	if (lexicalError) return 1;
-  
-  printf("(!) ERRO SINTATICO: Linha: %d\n", lineCount);
+
+  printf("(!) ERRO SINTATICO: Linha: %d | Token: %s\n", lineCount, lastToken);
   syntaxError = 1;
   return 1;
 }

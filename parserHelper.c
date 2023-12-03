@@ -1,31 +1,41 @@
 #include "utils.h"
 #include "parserHelper.h"
 
-void initStack(stack *st) {
+callList *head = NULL;
 
-	st = (stack*)malloc(sizeof(stack));
-	st->top = NULL;
+void insertNode(callList *list, char *name) {
+
+	callList *newItem = (callList*) malloc(sizeof(callList));
+  newItem->name = name;
+  if (head == NULL) {
+    head = newItem;
+  } else {
+    callList *temp = head;
+    while (temp->next != NULL) {
+      temp = temp->next;
+    }
+    temp->next = newItem;
+  }
 }
 
-void push(stack *st, char *name) {
+char *getLastNode(callList *list) {
 
-	stack *newItem = (stack*) malloc(sizeof(stack));	
-	newItem->next = st->top;
-	newItem->name = strdup(name);
-	st->top = newItem;
-}
+	if (head == NULL) return NULL;
+  if (head->next == NULL) {
+    char *name = strdup(head->name);
+    free(head);
+    return name;
+  }
 
-char *pop(stack *st) {
-	
-	if (st == NULL) return NULL;
+  callList *secondLast = head;
+  while (secondLast->next->next != NULL)
+      secondLast = secondLast->next;
+  
+  char *name = strdup(secondLast->next->name);
+  free(secondLast->next);
+  secondLast->next = NULL;
 
-	stack *st_old_top;
-    char *name = strdup(st->top->name);
-    st_old_top = st->top;
-    st->top = st_old_top->next;
-
-    free(st_old_top);
-	return name;
+  return name;
 }
 
 char *getTokenName(char *token) { 
