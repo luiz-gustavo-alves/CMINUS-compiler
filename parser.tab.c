@@ -1783,9 +1783,9 @@ yyreduce:
   case 41:
 #line 241 "parser.y"
                  { 
-        variableName = getTokenName(tokenID);
+        expName = getTokenName(tokenID);
         yyval = createExpNode(expId);
-        yyval->key.name = variableName;
+        yyval->key.name = expName;
         yyval->line = currentLine;
         yyval->type = Void;
       }

@@ -76,7 +76,6 @@ var_decl : exp_type IDENTIFIER {
               }
             	| exp_type IDENTIFIER { 
                 expName = getTokenName(tokenID);
-  
               }
             	OBRACKET NUMBER CBRACKET SEMICOLON { 
                   $$ = $1;
@@ -239,9 +238,9 @@ exp : var ASSIGN exp {
             | exp_simple { $$ = $1; };
 
 var : IDENTIFIER { 
-        variableName = getTokenName(tokenID);
+        expName = getTokenName(tokenID);
         $$ = createExpNode(expId);
-        $$->key.name = variableName;
+        $$->key.name = expName;
         $$->line = currentLine;
         $$->type = Void;
       }
