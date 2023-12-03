@@ -7,22 +7,19 @@
 
 int hasMainFunc = 0;
 
-void semantic_err(treeNode *tree, char *msg);
+void semanticAnalysis(treeNode *tree) {
 
-void sym_tab_build(treeNode *tree) {
-
-    tree_pre_order(tree);
-
+    preOrderTraversal(tree);
     if (!hasMainFunc && !semanticError) {
-        
 		printf("\n\n(!) ERRO SEMANTICO: Funcao main nao declarada.\n");
         semanticError = 1;
-    } 
-	else
-		verify_node_kind(syntaxTree);
+    }
+	else {
+		postOrderTraversal(tree);	
+	}
 }
 
-void tree_insert_node(treeNode *tree) { 
+void checkPreOrderNode(treeNode *tree) { 
 
 	if (!semanticError) {
 	
@@ -46,10 +43,10 @@ void tree_insert_node(treeNode *tree) {
 		                    } 
 							else {
 								
-		                        if (check_declared_func(tree->key.name) == 0) {
+		                        if (checkDeclaredFunc(tree->key.name) == 0) {
 									
-									sym_tab_insert(tree->key.name, tree->line, "global", tree->type, IS_FUNC);
-		                            cur_var_scope = tree->key.name;
+									insertSymtable(tree->key.name, tree->line, "global", tree->type, IS_FUNC);
+		                            currentScope = tree->key.name;
 		                        } 
 								else {
 									
@@ -69,35 +66,35 @@ void tree_insert_node(treeNode *tree) {
 		
 	                    if (tree->type == Void) {
 		
-	                        semantic_err(tree, "Variavel nao do tipo <INT>.");
+	                        throwSemanticError(tree, "Variavel nao do tipo <INT>.");
 	                        semanticError = 1;
 	                    }
 	
-	                    if (check_declared_var(tree->key.name) == 0) {
+	                    if (checkDeclaredVar(tree->key.name) == 0) {
 		
 	                        if (tree->child[0] == NULL) {
-								sym_tab_insert(tree->key.name, tree->line, cur_var_scope, tree->type, NOT_FUNC);
+								insertSymtable(tree->key.name, tree->line, currentScope, tree->type, NOT_FUNC);
 							}
 	
 	                        else {
 								
-								sym_tab_insert(tree->key.name, tree->line, cur_var_scope, tree->type, NOT_FUNC);
+								insertSymtable(tree->key.name, tree->line, currentScope, tree->type, NOT_FUNC);
 							}
 	
 	                    } else {
 		
-	                        if (strcmp(cur_var_scope, "global") != 0) {
+	                        if (strcmp(currentScope, "global") != 0) {
 		
-	                            if (check_declared_var_scope(tree->key.name, cur_var_scope) == 0) {
+	                            if (checkVarScope(tree->key.name, currentScope) == 0) {
 		
 	                                if (tree->child[0] == NULL) {
 										
-										sym_tab_insert(tree->key.name, tree->line, cur_var_scope, tree->type, NOT_FUNC);
+										insertSymtable(tree->key.name, tree->line, currentScope, tree->type, NOT_FUNC);
 									}
 	
 	                                else {
 										
-										sym_tab_insert(tree->key.name, tree->line, cur_var_scope, tree->type, NOT_FUNC);
+										insertSymtable(tree->key.name, tree->line, currentScope, tree->type, NOT_FUNC);
 									}
 	                            } 
 								else {
@@ -125,17 +122,17 @@ void tree_insert_node(treeNode *tree) {
 	                    if (strcmp(tree->key.name, "input") == 0 || strcmp(tree->key.name, "output") == 0) 
 							tree->type = Integer; 
 	
-	                    else if (check_declared_func(tree->key.name) == 0) { 
+	                    else if (checkDeclaredFunc(tree->key.name) == 0) { 
 	                        
 							printf("\n\n(!) ERRO SEMANTICO | LINHA: %d: Funcao %s nao declarada.\n", tree->line, tree->key.name);
 	                        semanticError = 1;
 	                    } 
 						else {
 		
-	                        get_func_kind(tree->key.name, type);
+	                        getFuncType(tree->key.name, type);
 	                        tree->type = *type;
 							
-							sym_tab_insert(tree->key.name, tree->line, "global", tree->type, IS_FUNC);
+							insertSymtable(tree->key.name, tree->line, "global", tree->type, IS_FUNC);
 	                    }
 	                break;
 	            }
@@ -149,33 +146,33 @@ void tree_insert_node(treeNode *tree) {
 		
 	                    if (strcmp(tree->key.name, "void") != 0) {
 		
-	                        if (check_declared_var(tree->key.name) == 0) {
+	                        if (checkDeclaredVar(tree->key.name) == 0) {
 		
 	                                printf("\n\n(!) ERRO SEMANTICO | LINHA %d: Variavel %s nao declarada.\n", tree->line, tree->key.name);
 	                                semanticError = 1;
 	                            } 
-								else if (check_declared_var_scope(tree->key.name, cur_var_scope) == 1) {
+								else if (checkVarScope(tree->key.name, currentScope) == 1) {
 	                                
-									get_var_kind(tree->key.name, cur_var_scope, type);
+									getVarType(tree->key.name, currentScope, type);
 	                                
 									if (tree->type == Void) tree->type = *type;
 									
-									sym_tab_insert(tree->key.name, tree->line, cur_var_scope, tree->type, NOT_FUNC);
+									insertSymtable(tree->key.name, tree->line, currentScope, tree->type, NOT_FUNC);
 	                            } 
 								else {
 				
-	                                if (check_declared_global_var(tree->key.name) == 0) {
+	                                if (checkGlobalVar(tree->key.name) == 0) {
 	                                    
 										printf("\n\n(!) ERRO SEMANTICO | LINHA %d: Variavel %s nao declarada.\n", tree->line, tree->key.name);
 	                                    semanticError = 1;
 	                                } 
 									else {
 		
-	                                    get_var_kind(tree->key.name, "global", type);
+	                                    getVarType(tree->key.name, "global", type);
 	                                    
 	                                    if (tree->type == Void) tree->type = *type;
 										
-										sym_tab_insert(tree->key.name, tree->line, "global", tree->type, NOT_FUNC);
+										insertSymtable(tree->key.name, tree->line, "global", tree->type, NOT_FUNC);
 	                                }
 	                            }
 	                        }
@@ -190,34 +187,33 @@ void tree_insert_node(treeNode *tree) {
 	}
 }
 
-void tree_post_order(treeNode *tree) {
+void postOrderTraversal(treeNode *tree) {
 
     if (tree != NULL && !semanticError) { 
 		
 		int i;
         for (i = 0; i < CHILD_MAX_NODES; i++) 
-			tree_post_order(tree->child[i]);
+			postOrderTraversal(tree->child[i]);
 
-        verify_nodes(tree);
-        tree_post_order(tree->sibling);
+        checkPostOrderNode(tree);
+        postOrderTraversal(tree->sibling);
     }
 }
 
-void tree_pre_order(treeNode *tree) { 
+void preOrderTraversal(treeNode *tree) { 
 
-    if (tree != NULL) { 
+    if (tree != NULL && !semanticError) {
+        checkPreOrderNode(tree);
 
-        tree_insert_node(tree);
-		
 		int i;
-        for (i = 0; i < CHILD_MAX_NODES; i++) 
-			tree_pre_order(tree->child[i]);
-        
-        tree_pre_order(tree->sibling);
+        for (i = 0; i < CHILD_MAX_NODES; i++) {
+			preOrderTraversal(tree->child[i]);
+		}
+        preOrderTraversal(tree->sibling);
     }
 }
 
-void verify_nodes(treeNode *tree) {
+void checkPostOrderNode(treeNode *tree) {
 	
     switch (tree->node) { 
 
@@ -228,7 +224,7 @@ void verify_nodes(treeNode *tree) {
 	            case expOp:
 	
 	                if ((tree->child[0]->type != Integer) || (tree->child[1]->type != Integer))
-	                    semantic_err(tree, " Operacao entre nao inteiros.");
+	                    throwSemanticError(tree, " Operacao entre nao inteiros.");
 	                else
 	                    tree->type = Integer;
 	                    
@@ -256,39 +252,31 @@ void verify_nodes(treeNode *tree) {
 		        case stmtIf:
 		            
 					if (tree->child[0]->type == Integer) 
-						semantic_err(tree->child[0], "IF nao do tipo <boolean>."); 
+						throwSemanticError(tree->child[0], "IF nao do tipo <boolean>."); 
 					break;
 
 		        case stmtAttrib:
 	
 		            if (tree->child[0]->type != tree->child[1]->type) 
-						semantic_err(tree->child[1], "Tipo da variavel e valor a ser atribuido nao condizentes.");
+						throwSemanticError(tree->child[1], "Tipo da variavel e valor a ser atribuido nao condizentes.");
 		            break;
 
 		        case stmtWhile:
 	
 		            if (tree->child[0]->type == Integer) 
-						semantic_err(tree->child[0], "WHILE nao do tipo <boolean>.");
+						throwSemanticError(tree->child[0], "WHILE nao do tipo <boolean>.");
 		            break;
 		        }
 	    break;
     }
 }
 
-void verify_node_kind(treeNode *tree) {
-
-    tree_post_order(tree);
-
-    if (!semanticError) printf("\n\n(*) FASES DE ANALISE COMPLETA.");
-}
-
-void semantic_err(treeNode *tree, char *msg) {
-	
+void throwSemanticError(treeNode *tree, char *msg) {
     semanticError = 1;
-
-    if (tree->node != exp && tree->subType.exp != expId)
-        printf("\n\n(!) ERRO SEMANTICO | LINHA %d: %s\n", tree->line, msg);
-
-    else
-        printf("\n\n(!) ERRO SEMANTICO: %s | LINHA %d: %s\n", tree->key.name, tree->line, msg);
+    if (tree->node != exp && tree->subType.exp != expId) {
+        printf("(!) ERRO SEMANTICO | LINHA %d: %s\n", tree->line, msg);
+	}
+    else {
+		printf("(!) ERRO SEMANTICO: %s | LINHA %d: %s\n", tree->key.name, tree->line, msg);
+	}
 }

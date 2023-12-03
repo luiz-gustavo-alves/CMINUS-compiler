@@ -40,11 +40,11 @@ int main(int argc, char *argv[]) {
 		printSyntaxTree(syntaxTree);
 
 		printf("\n\n* * * * * ANALISE SEMANTICA * * * * *\n\n");
-		sym_tab_build(syntaxTree);
+		semanticAnalysis(syntaxTree);
 
 		if (!semanticError) {
 			printf("\n\n* * * * * TABELA DE SIMBOLOS * * * * *\n\n");
-			print_sym_tab();
+			printSymtable();
 		}
 	}
 
