@@ -202,6 +202,7 @@ token lexicalAnalysis() {
 						lineCount++;
 						printf("\n");
 					}
+
 					if (!(isLetterChar(currentChar) || isDigitChar(currentChar))) {
 						memset(lexem, 0, sizeof(TOKEN_MAX_LENGTH));
 					}
@@ -218,7 +219,8 @@ token lexicalAnalysis() {
 		}
 
 		previousState = currentState;
-		if (currentChar == '\n') {
+		if (previousChar == '\n') {
+			printf("(p %c )\n", currentChar);
 			lineCount++;
 			printf("\n");
 		}

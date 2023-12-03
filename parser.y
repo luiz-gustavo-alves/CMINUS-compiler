@@ -65,7 +65,6 @@ decl : var_decl { $$ = $1; } | func_decl { $$ = $1; };
 
 var_decl : exp_type IDENTIFIER { 
                 expName = getTokenName(tokenID);
-                currentLine = lineCount;
               }
               SEMICOLON {
                 $$ = $1;
@@ -77,7 +76,7 @@ var_decl : exp_type IDENTIFIER {
               }
             	| exp_type IDENTIFIER { 
                 expName = getTokenName(tokenID);
-                currentLine = lineCount;
+  
               }
             	OBRACKET NUMBER CBRACKET SEMICOLON { 
                   $$ = $1;
@@ -106,7 +105,7 @@ exp_type : INT {
 
 func_decl : exp_type IDENTIFIER {
                 functionName = getTokenName(tokenID);
-                currentLine = lineCount;
+                functionCurrentLine = lineCount;
               }
               OPARENT params CPARENT bloc_decl {
 				        $$ = $1;
@@ -115,7 +114,7 @@ func_decl : exp_type IDENTIFIER {
                 declNode->child[0] = $5;
                 declNode->child[1] = $7;
                 declNode->key.name = functionName;
-                declNode->line = currentLine;
+                declNode->line = functionCurrentLine;
                 declNode->type = $1->type;                
                 $$->child[0] = declNode;
               };
@@ -141,7 +140,6 @@ list_params : list_params COMMA arg {
 arg : exp_type IDENTIFIER {
             $$ = $1;
             expName = getTokenName(tokenID);
-            currentLine = lineCount;
 
             YYSTYPE declNode = createDeclNode(declVar); 
 
@@ -152,7 +150,6 @@ arg : exp_type IDENTIFIER {
             $$->child[0] = declNode;
           } | exp_type IDENTIFIER {
             expName = getTokenName(tokenID);
-            currentLine = lineCount;
           }
     	    OBRACKET CBRACKET {    
             $$ = $1;
@@ -243,8 +240,6 @@ exp : var ASSIGN exp {
 
 var : IDENTIFIER { 
         variableName = getTokenName(tokenID);
-        currentLine = lineCount;
-
         $$ = createExpNode(expId);
         $$->key.name = variableName;
         $$->line = currentLine;
@@ -252,7 +247,6 @@ var : IDENTIFIER {
       }
       | IDENTIFIER { 
         variableName = getTokenName(tokenID);
-        currentLine = lineCount;
       } 
       OBRACKET exp CBRACKET {
         $$ = createExpNode(expId);
@@ -340,7 +334,6 @@ factor : OPARENT exp CPARENT { $$ = $1; }
 
 activate : IDENTIFIER {
             insertNode(&list, getTokenName(tokenID));
-            currentLine = lineCount;
           }
           OPARENT arguments CPARENT {   
               $$ = createStmtNode(stmtFunc);
@@ -378,6 +371,7 @@ int yylex() {
   }
 
   lastToken = getTokenName(tokenNames[0][tk.type - 1]);
+  currentLine = tk.line;
   return tk.type;
 }
 
