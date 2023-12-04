@@ -1,15 +1,19 @@
 #include "symtab.h"
+#include "analyze.h"
 
 int hashKey;
 symTable hashValue;
 
+int varCount = 1;
+
 int createHashKey(char * key) { 
-	int tmp = 0;
+	int asciiVal = 0;
     int i = 0;
     while (key[i] != '\0') {
-        tmp = ((tmp << SHIFT) + key[i]) % HASHTABLE_LEN; i++;
+        asciiVal += (int) key[i];
+        i++;
     }
-    return tmp;
+    return asciiVal % HASHTABLE_LEN;
 }
 
 symTable getHashValue(char *name) {
@@ -17,35 +21,35 @@ symTable getHashValue(char *name) {
 	return hashtable[hashKey];
 }
 
-void insertSymtable(char *name, int lineNumber, char *currentScope, primitiveType kind, int isFunction) {
+void insertSymtable(char *name, int line, char *scope, primitiveType type, idType idType) {
 	
 	hashValue = getHashValue(name);
-    while (hashValue != NULL && (strcmp(name, hashValue->name) != 0 || strcmp(hashValue->scope, currentScope) != 0)) {
+    while (hashValue != NULL && (strcmp(name, hashValue->name) != 0 || strcmp(hashValue->scope, scope) != 0)) {
         hashValue = hashValue->next;
     }
 
     if (hashValue == NULL) {
 		hashValue = (symTable) malloc(sizeof(struct symTable));
-        if (!isFunction) {
+        if (idType == isVar) {
             hashValue->idNumber = varCount;
             varCount++;
         }
 
-        if (strcmp(currentScope, "global") == 1) {
+        if (COMP_DIF(scope, "global")) {
             char* scope_global = malloc(sizeof(char));
             strcat(scope_global, "global");
             hashValue->scope = scope_global;
         } 
 		else {
-            hashValue->scope = currentScope;
+            hashValue->scope = scope;
         }
         
         hashValue->name = name;
-        hashValue->isFunc = isFunction;
-        hashValue->type = kind;
+        hashValue->id = idType;
+        hashValue->type = type;
 
         hashValue->lines = (lineList) malloc(sizeof(struct lineList));
-        hashValue->lines->line = lineNumber;
+        hashValue->lines->line = line;
         hashValue->lines->next = NULL;
 
         hashValue->next = hashtable[hashKey];
@@ -60,33 +64,33 @@ void insertSymtable(char *name, int lineNumber, char *currentScope, primitiveTyp
 
         hashLines->next = (lineList) malloc(sizeof(struct lineList));
         hashLines->next->next = NULL;
-        hashLines->next->line = lineNumber;
+        hashLines->next->line = line;
     }
 }
 
-int checkDeclaredFunc(char *name) {
-	
+int checkVarIsFunc(char *name) {
     hashValue = getHashValue(name);
-    while (hashValue != NULL && (strcmp(name, hashValue->name) != 0)) {
+    if (hashValue == NULL) {
+        return 0;
+    }
+    return hashValue->id == isFunc;
+}
+
+int checkIdDeclaration(char *name) {
+    hashValue = getHashValue(name);
+    while (hashValue != NULL) {
+        if (strcmp(hashValue->name, name) == 0) {
+            break;
+        }
         hashValue = hashValue->next;
     }
     return hashValue != NULL;
 }
 
-int checkDeclaredVar(char *name) {
-	
-    hashValue = getHashValue(name);
-    while (hashValue != NULL && (strcmp(name, hashValue->name) != 0)) {
-        hashValue = hashValue->next;
-    }
-    return hashValue != NULL; 
-}
-
-int checkVarScope(char *name, char *currentScope) {
-	
+int checkScope(char *name, char *scope) {
     hashValue = getHashValue(name);
     while (hashValue != NULL) {
-        if ((strcmp(name, hashValue->name) == 0) && strcmp(currentScope, hashValue->scope) == 0) {
+        if ((strcmp(hashValue->name, name) == 0) && strcmp(hashValue->scope, scope) == 0) {
             break;
         }
         hashValue = hashValue->next;
@@ -94,22 +98,12 @@ int checkVarScope(char *name, char *currentScope) {
     return hashValue != NULL; 
 }
 
-int checkGlobalVar(char *name) {
-	
+void getIdType(char *name, primitiveType *type) {
     hashValue = getHashValue(name);
-    while (hashValue != NULL) {
-        if ((strcmp(name, hashValue->name) == 0) && strcmp(hashValue->scope, "global") == 0) {
+    while ((hashValue != NULL)) {
+        if ((strcmp(hashValue->name, name) == 0)) {
             break;
         }
-        hashValue = hashValue->next;
-    }
-    return hashValue != NULL; 
-}
-
-void getFuncType(char *name, primitiveType *type) {
-
-    hashValue = getHashValue(name);
-    while ((hashValue != NULL) && ((strcmp(name, hashValue->name) != 0))) {
         hashValue = hashValue->next;
     }
 
@@ -118,24 +112,12 @@ void getFuncType(char *name, primitiveType *type) {
     }
 }
 
-void getVarType(char *name, char *currentScope, primitiveType *type) {
-	
-    hashValue = getHashValue(name);
-    while ((hashValue != NULL) && ((strcmp(name, hashValue->name) != 0) || (strcmp(currentScope, hashValue->scope) != 0))) {
-        hashValue = hashValue->next;
-    }
-
-    if (hashValue != NULL) {
-        *type = hashValue->type;
-    }
-}
-
-char *getPrimitiveType(primitiveType kind) {
-	switch (kind) {
-        case Integer: return "int";
-        case Void: return "void";
-        case Array: return "array";
-        default: return "boolean";
+char *getPrimitiveType(primitiveType type) {
+	switch (type) {
+        case Integer: return "Int";
+        case Void: return "Void";
+        case Array: return "Array";
+        default: return "Boolean";
     }
 }
 

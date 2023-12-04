@@ -2,41 +2,38 @@
 #define SYMTAB_H
 
 #include "utils.h"
+#include "syntaxTree.h"
 
-#define HASHTABLE_LEN 211
-#define SHIFT 4
+#define HASHTABLE_LEN 241
+
+typedef enum { isFunc, isVar } idType;
 
 typedef struct lineList { 
     struct lineList *next;
     int line;
-
 } *lineList;
 
 typedef struct symTable { 
     struct symTable* next;
-
 	char *name, *scope;
-    int idNumber, isFunc;
+    int idNumber;
 
     lineList lines;
     primitiveType type; 
+    idType id;
 } *symTable;
 
 static symTable hashtable[HASHTABLE_LEN];
 
-static int varCount = 1;
-
 symTable getHashValue(char *name);
 int createHashKey(char *key);
-int checkDeclaredFunc(char *name);
-int checkDeclaredVar(char *name);
-int checkVarScope(char *name, char *_var_scope);
-int checkGlobalVar(char *name);
 
-void getFuncType(char *name, primitiveType *p_kind);
-void getVarType(char *name, char *_var_scope, primitiveType *p_kind);
+int checkVarIsFunc(char *name);
+int checkIdDeclaration(char *name);
+int checkScope(char *name, char *scope);
+void getIdType(char *name, primitiveType *type);
 
-void insertSymtable(char *name, int line_number, char *_var_scope, primitiveType kind, int is_function);
+void insertSymtable(char *name, int line, char *scope, primitiveType type, idType idType);
 void printSymtable();
 
 #endif /* SYMTAB_H */

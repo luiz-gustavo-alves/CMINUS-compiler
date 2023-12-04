@@ -5,9 +5,6 @@
 #define COMP_EQUAL(str1, str2) (strcmp(str1, str2) == 0)
 #define COMP_DIF(str1, str2) (strcmp(str1, str2) == 1)
 
-#define NOT_FUNC 0
-#define IS_FUNC 1
-
 int mainFuncDecl = 0;
 
 void semanticAnalysis(treeNode *tree) {
@@ -39,12 +36,17 @@ int validateDeclFunc(treeNode *tree) {
 		mainFuncDecl = 1;
 	}
 
-	int funcFirstDecl = checkDeclaredFunc(tree->key.name) == 0;
+	int funcFirstDecl = checkIdDeclaration(tree->key.name) == 0;
 	if (funcFirstDecl) {
-		insertSymtable(tree->key.name, tree->line, "global", tree->type, IS_FUNC);
+		insertSymtable(tree->key.name, tree->line, "global", tree->type, isFunc);
 		currentScope = tree->key.name;
 	} else {
-		return throwSemanticError(tree, "Funcao ja declarada.");
+		int funcIsDeclared = checkVarIsFunc(tree->key.name);
+		if (!funcIsDeclared) {
+			return throwSemanticError(tree, "Declaracao de funcao com nome de variavel ja declarada.");
+		} else {
+			return throwSemanticError(tree, "Funcao ja declarada.");
+		}
 	}
 }
 
@@ -58,13 +60,18 @@ int validateDeclVar(treeNode *tree) {
         return throwSemanticError(tree, "Variavel global ja declarada.");
     }
 
-	int varFirstDecl = checkDeclaredVar(tree->key.name) == 0;
+	int varIsFunc = checkVarIsFunc(tree->key.name);
+	if (varIsFunc) {
+		return throwSemanticError(tree, "Declaracao de variavel com nome de funcao ja declarada.");
+	}
+
+	int varFirstDecl = checkIdDeclaration(tree->key.name) == 0;
 	if (varFirstDecl) {
-		insertSymtable(tree->key.name, tree->line, currentScope, tree->type, NOT_FUNC);
+		insertSymtable(tree->key.name, tree->line, currentScope, tree->type, isVar);
 	} else {
-		int varDeclInScopeOrArgs = checkVarScope(tree->key.name, currentScope) == 0;
+		int varDeclInScopeOrArgs = checkScope(tree->key.name, currentScope) == 0;
 		if (varDeclInScopeOrArgs) {
-            insertSymtable(tree->key.name, tree->line, currentScope, tree->type, NOT_FUNC);
+            insertSymtable(tree->key.name, tree->line, currentScope, tree->type, isVar);
         } else {
 			return throwSemanticError(tree, "Variavel ja declarada.");
 		}
@@ -86,13 +93,13 @@ int validateStmtFunc(treeNode *tree, primitiveType *type) {
 		return 0;
 	}
 
-	int funcNotDeclared = checkDeclaredFunc(tree->key.name) == 0;
+	int funcNotDeclared = checkIdDeclaration(tree->key.name) == 0;
 	if (funcNotDeclared) { 
 		return throwSemanticError(tree, "Funcao nao declarada.");
 	} else {
-		getFuncType(tree->key.name, type);
+		getIdType(tree->key.name, type);
 		tree->type = *type;
-		insertSymtable(tree->key.name, tree->line, "global", tree->type, IS_FUNC);
+		insertSymtable(tree->key.name, tree->line, "global", tree->type, isFunc);
 	}
 }
 
@@ -102,30 +109,30 @@ int validateExpId(treeNode *tree, primitiveType *type) {
 		return 0;
 	}
 
-	int varNotDeclared = checkDeclaredVar(tree->key.name) == 0;
+	int varNotDeclared = checkIdDeclaration(tree->key.name) == 0;
 	if (varNotDeclared) {
 		return throwSemanticError(tree, "Variavel nao declarada");
 	}
 	
-	int isLocalVarScope = checkVarScope(tree->key.name, currentScope) == 1;
+	int isLocalVarScope = checkScope(tree->key.name, currentScope) == 1;
 	if (isLocalVarScope) {
-		getVarType(tree->key.name, currentScope, type);
+		getIdType(tree->key.name, type);
 		if (tree->type == Void) {
 			tree->type = *type;
 		}
-		insertSymtable(tree->key.name, tree->line, currentScope, tree->type, NOT_FUNC);
+		insertSymtable(tree->key.name, tree->line, currentScope, tree->type, isVar);
 	} else {
 
-		int varNotGlobal = checkGlobalVar(tree->key.name) == 0;
+		int varNotGlobal = checkScope(tree->key.name, "global") == 0;
 		if (varNotGlobal) {
 			return throwSemanticError(tree, "Variavel nao declarada.");
 		} 
 		else {
-			getVarType(tree->key.name, "global", type);
+			getIdType(tree->key.name, type);
 			if (tree->type == Void) {
 				tree->type = *type;
 			}
-			insertSymtable(tree->key.name, tree->line, "global", tree->type, NOT_FUNC);
+			insertSymtable(tree->key.name, tree->line, "global", tree->type, isVar);
 		}
 	}
 }
