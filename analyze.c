@@ -7,21 +7,6 @@
 
 int mainFuncDecl = 0;
 
-void semanticAnalysis(treeNode *tree) {
-
-	/* Check variable, function, statements and expression declarations */
-    preOrderTraversal(tree);
-
-    if (!mainFuncDecl && !semanticError) {
-		printf("\n\n(!) ERRO SEMANTICO: Funcao main nao declarada.\n");
-        semanticError = 1;
-    }
-	else {
-		/* Check variable, numeric, expression types and operations */
-		postOrderTraversal(tree);	
-	}
-}
-
 int validateDeclFunc(treeNode *tree) {
 
 	if (mainFuncDecl) {
@@ -53,7 +38,7 @@ int validateDeclFunc(treeNode *tree) {
 int validateDeclVar(treeNode *tree) {
 
 	if (tree->type == Void) {
-		return throwSemanticError(tree, "Variavel nao do tipo <INT>.");
+		return throwSemanticError(tree, "Declaracao de variavel do tipo VOID.");
 	}
 
     if (COMP_DIF(currentScope, "global")) {
@@ -164,32 +149,31 @@ int isBooleanOp(treeNode *tree) {
 
 int validateExpOp(treeNode *tree) {
 	if ((tree->child[0]->type != Integer) || (tree->child[1]->type != Integer)) {
-		return throwSemanticError(tree, " Operacao entre nao inteiros.");
+		return throwSemanticError(tree, " Operacao entre tipos que nao sao INT.");
 	}
 
 	if (isBooleanOp(tree)) {
 		tree->type = Boolean;
-	}
-	else {
+	} else {
 		tree->type = Integer;
 	}
 }
 
 int validateStmtIf(treeNode *tree) {
 	if (tree->child[0]->type == Integer) {
-		return throwSemanticError(tree->child[0], "Condicional IF nao eh do tipo <boolean>.");
+		return throwSemanticError(tree->child[0], "Condicional IF nao eh do tipo BOOLEAN.");
 	}
 }
 
 int validateStmtWhile(treeNode *tree) {
 	if (tree->child[0]->type == Array || tree->child[0]->type == Void) {
-		return throwSemanticError(tree->child[0], "Condicional WHILE nao eh do tipo <boolean>.");
+		return throwSemanticError(tree->child[0], "Condicional WHILE nao eh do tipo BOOLEAN.");
 	}
 }
 
 int validateStmtAttrib(treeNode *tree) {
 	if (tree->child[0]->type != tree->child[1]->type) {
-		return throwSemanticError(tree->child[1], "Tipo e valor da variavel a ser atribuida nao sao condizentes.");
+		return throwSemanticError(tree->child[1], "Tipos invalidos para atribuicao de variavel.");
 	}
 }
 
@@ -208,7 +192,6 @@ void checkNodesTypes(treeNode *tree) {
 }
 
 void preOrderTraversal(treeNode *tree) { 
-
     if (tree != NULL && !semanticError) {
         checkNodesDeclaration(tree);
 		int i;
@@ -220,7 +203,6 @@ void preOrderTraversal(treeNode *tree) {
 }
 
 void postOrderTraversal(treeNode *tree) {
-
     if (tree != NULL && !semanticError) { 
 		int i;
         for (i = 0; i < CHILD_MAX_NODES; i++) 
@@ -229,6 +211,21 @@ void postOrderTraversal(treeNode *tree) {
         checkNodesTypes(tree);
         postOrderTraversal(tree->sibling);
     }
+}
+
+void semanticAnalysis(treeNode *tree) {
+
+	/* Check variable, function, statements and expression declarations */
+    preOrderTraversal(tree);
+
+    if (!mainFuncDecl && !semanticError) {
+		printf("(!) ERRO SEMANTICO: Funcao main nao foi declarada.\n");
+        semanticError = 1;
+    }
+	else {
+		/* Check variable, numeric, expression types and operations */
+		postOrderTraversal(tree);	
+	}
 }
 
 int throwSemanticError(treeNode *tree, char *msg) {

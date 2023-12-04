@@ -78,12 +78,6 @@ int checkVarIsFunc(char *name) {
 
 int checkIdDeclaration(char *name) {
     hashValue = getHashValue(name);
-    while (hashValue != NULL) {
-        if (strcmp(hashValue->name, name) == 0) {
-            break;
-        }
-        hashValue = hashValue->next;
-    }
     return hashValue != NULL;
 }
 
@@ -123,9 +117,9 @@ char *getPrimitiveType(primitiveType type) {
 
 void printSymtable() {
     
-	printf(" |------------------------------------------------------------------------------------\n");
-    printf(" |   Nome   |  Id  |  Tipo Variavel  |   Escopo   |   Linhas  	      \n");
-    printf(" |------------------------------------------------------------------------------------\n");
+	printf(" |-----------------------------------------------------------------------------------------------------------------------\n");
+    printf(" |   Nome            |  ID  |  Tipo Dado |  Tipo ID  |   Escopo            |   Linhas  	      \n");
+    printf(" |-----------------------------------------------------------------------------------------------------------------------\n");
 
 	int i;
     for (i = 0; i < HASHTABLE_LEN; i++) {
@@ -135,17 +129,22 @@ void printSymtable() {
 
             while (hashValue != NULL) {
                 lineList hashLines = hashValue->lines;
-                printf(" |  %-6s ", hashValue->name);
+                printf(" |  %-15s ", hashValue->name);
 
                 if (hashValue->idNumber < 10) {
                     printf(" |  0%-1d ", hashValue->idNumber);
-                }
-                else {
+                } else {
                     printf(" |  %-1d ", hashValue->idNumber);
                 }
 
-                printf(" |  %-13s ", getPrimitiveType(hashValue->type));
-                printf(" |  %-8s  | ", hashValue->scope);
+                if (hashValue->id == isVar) {
+                    printf(" |  %-7s  ", "Var");
+                } else {
+                    printf(" |  %-7s  ", "Func");
+                }
+
+                printf(" |  %-7s ", getPrimitiveType(hashValue->type));
+                printf(" |  %-17s  | ", hashValue->scope);
 
                 while (hashLines != NULL) { 
 					printf("%4d ", hashLines->line);
@@ -156,5 +155,5 @@ void printSymtable() {
             }
         }
     }
-    printf(" |-----------------------------------------------------------------------------------\n\n");
+    printf(" |-----------------------------------------------------------------------------------------------------------------------\n\n");
 } 
