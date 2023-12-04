@@ -75,7 +75,8 @@ extern int yydebug;
     OKEY = 24,
     CKEY = 25,
     IDENTIFIER = 26,
-    NUMBER = 27
+    NUMBER = 27,
+    elsePriority = 258
   };
 #endif
 

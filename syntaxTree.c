@@ -26,7 +26,7 @@ treeNode *createNode() {
         newNode->child[i] = NULL;
     }
     newNode->sibling = NULL;
-    newNode->line = lineCount;
+    newNode->line = currentLine;
     return newNode;
 }
 
@@ -54,7 +54,6 @@ treeNode *createExpNode(expType node) {
 treeNode *createDeclVarNode(declType declVar, treeNode *expType) {
     treeNode *declVarNode = createDeclNode(declVar);
     declVarNode->key.name = expName;
-    declVarNode->line = currentLine;
     declVarNode->type = expType->type;
 
     expType->child[0] = declVarNode;
@@ -68,7 +67,6 @@ treeNode *createArrayDeclVarNode(expType expNum, declType declVar, treeNode *exp
 
     treeNode *declVarNode = createDeclNode(declVar);
     declVarNode->key.name = expName;
-    declVarNode->line = currentLine;
     declVarNode->child[0] = expNumNode;
 
     if (expType->type == Integer) {
@@ -103,7 +101,6 @@ treeNode *createEmptyParams(expType expId) {
 treeNode *createArrayArg(declType declVar, treeNode *expType) {
     treeNode *declVarNode = createDeclNode(declVar);
     declVarNode->key.name = expName;
-    declVarNode->line = currentLine;
             
     if (expType->type == Integer) {
         declVarNode->type = Array;
@@ -145,7 +142,6 @@ treeNode *createAssignStmt(stmtType stmtAttrib, treeNode *var, treeNode *exp) {
 treeNode *createExpVar(expType expId) {
     treeNode *expVarNode = createExpNode(expId);
     expVarNode->key.name = expName;
-    expVarNode->line = currentLine;
     expVarNode->type = Void;
     return expVarNode;
 }
@@ -153,7 +149,6 @@ treeNode *createExpVar(expType expId) {
 treeNode *createArrayExpVar(expType expId, treeNode *exp) {
     treeNode *expVarNode = createExpNode(expId);
     expVarNode->key.name = variableName;
-    expVarNode->line = currentLine;
     expVarNode->child[0] = exp;
     expVarNode->type = Integer;
     return expVarNode;
@@ -177,7 +172,6 @@ treeNode *createActivationFunc(stmtType stmtFunc, treeNode *arguments, callList 
     treeNode *activationFuncNode = createStmtNode(stmtFunc);
     activationFuncNode->child[1] = arguments; 
     activationFuncNode->key.name = getLastNodeCallList(list);
-    activationFuncNode->line = currentLine;
     return activationFuncNode;
 }
 

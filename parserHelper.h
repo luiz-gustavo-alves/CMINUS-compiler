@@ -9,7 +9,7 @@
 char *expName;
 char *variableName;
 char *functionName;
-char *lastToken;
+char *currentToken;
 
 int currentLine;
 int functionCurrentLine;

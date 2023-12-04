@@ -37,6 +37,9 @@
 %token IDENTIFIER 26
 %token NUMBER 27
 
+%nonassoc elsePriority
+%nonassoc ELSE
+
 %start program
 
 %%
@@ -106,13 +109,13 @@ exp_decl :  exp SEMICOLON { $$ = $1; }
             | 
             SEMICOLON { $$ = NULL; };
 
-cond_decl : IF OPARENT exp CPARENT stmt { $$ = createIfStmt(stmtIf, $3, $5, NULL); }
+cond_decl : IF OPARENT exp CPARENT stmt { $$ = createIfStmt(stmtIf, $3, $5, NULL); } %prec elsePriority
             |
             IF OPARENT exp CPARENT stmt ELSE stmt { $$ = createIfStmt(stmtIf, $3, $5, $7); };
 
 loop_decl : WHILE OPARENT exp CPARENT stmt { $$ = createWhileStmt(stmtWhile, $3, $5); };
 
-return_decl : RETURN SEMICOLON { $$ = createStmtNode(stmtReturn); }
+return_decl : RETURN SEMICOLON { $$ = createStmtNode(stmtReturn); } 
               |
               RETURN exp SEMICOLON { $$ = createStmtNode(stmtReturn); $$->child[0] = $2; };
 
@@ -196,7 +199,7 @@ int yylex() {
     return YYEOF;
   }
 
-  lastToken = getTokenName(tokenNames[0][tk.type - 1]);
+  currentToken = getTokenName(tokenNames[0][tk.type - 1]);
   currentLine = tk.line;
   return tk.type;
 }
@@ -212,7 +215,7 @@ int yyerror(char *errorMsg) {
     return 1;
   }
 
-  printf("(!) ERRO SINTATICO: Linha: %d | Token: %s\n", lineCount, lastToken);
+  printf("(!) ERRO SINTATICO: Linha: %d | Token: %s\n", lineCount, currentToken);
   syntaxError = 1;
   return 1;
 }
