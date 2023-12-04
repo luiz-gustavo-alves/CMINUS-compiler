@@ -110,10 +110,10 @@ int checkScope(char *name, char *scope) {
     return hashValue != NULL; 
 }
 
-void getIdType(char *name, primitiveType *type) {
+void getIdType(char *name, char *scope, primitiveType *type) {
     hashValue = getHashValue(name);
     while ((hashValue != NULL)) {
-        if ((strcmp(hashValue->name, name) == 0)) {
+        if ((strcmp(hashValue->name, name) == 0) || strcmp(hashValue->scope, scope) == 0) {
             break;
         }
         hashValue = hashValue->next;

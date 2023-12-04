@@ -79,7 +79,7 @@ int validateStmtFunc(treeNode *tree, primitiveType *type) {
 	if (!funcDeclared) { 
 		return throwSemanticError(tree, "Funcao nao declarada.");
 	} else {
-		getIdType(tree->key.name, type);
+		getIdType(tree->key.name, currentScope, type);
 		tree->type = *type;
 		insertFuncSymtable(tree->key.name, tree->line, tree->type);
 	}
@@ -98,7 +98,7 @@ int validateExpId(treeNode *tree, primitiveType *type) {
 
 	int isLocalVarScope = checkScope(tree->key.name, currentScope);
 	if (isLocalVarScope) {
-		getIdType(tree->key.name, type);
+		getIdType(tree->key.name, currentScope, type);
 		if (tree->type == Void) {
 			tree->type = *type;
 		}
@@ -108,7 +108,7 @@ int validateExpId(treeNode *tree, primitiveType *type) {
 		if (!varGlobal) {
 			return throwSemanticError(tree, "Variavel nao declarada.");
 		} else {
-			getIdType(tree->key.name, type);
+			getIdType(tree->key.name, currentScope, type);
 			if (tree->type == Void) {
 				tree->type = *type;
 			}

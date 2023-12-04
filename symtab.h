@@ -31,7 +31,7 @@ int createHashKey(char *key);
 int checkVarIsFunc(char *name);
 int checkIdDeclaration(char *name);
 int checkScope(char *name, char *scope);
-void getIdType(char *name, primitiveType *type);
+void getIdType(char *name, char *scope, primitiveType *type);
 
 void insertFuncSymtable(char *name, int line, primitiveType type);
 void insertVarSymtable(char *name, int line, char *scope, primitiveType type);
