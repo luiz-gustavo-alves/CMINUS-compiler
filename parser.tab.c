@@ -1405,7 +1405,7 @@ yyreduce:
 
   case 3:
 #line 45 "parser.y"
-                               { yyval = traversalLeftChild(yyvsp[-1], yyvsp[0]); }
+                               { yyval = traversal(yyvsp[-1], yyvsp[0]); }
 #line 1410 "parser.tab.c"
     break;
 

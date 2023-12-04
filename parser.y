@@ -42,7 +42,7 @@
 %%
 program : list_decl { tree = $1; };
 
-list_decl :     list_decl decl { $$ = traversalLeftChild($1, $2); } 
+list_decl :     list_decl decl { $$ = traversal($1, $2); } 
               	| 
                 decl { $$ = $1; };
 

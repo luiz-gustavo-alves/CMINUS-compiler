@@ -33,7 +33,6 @@ typedef struct treeNode {
 
 treeNode *parse();
 treeNode *traversal(treeNode *node1, treeNode *node2);
-treeNode *traversalLeftChild(treeNode *node1, treeNode *node2);
 treeNode *createDeclNode(declType node);
 treeNode *createExpNode(expType node);
 treeNode *createStmtNode(stmtType node);

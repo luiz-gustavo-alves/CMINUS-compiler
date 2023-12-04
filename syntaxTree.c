@@ -19,19 +19,6 @@ treeNode *traversal(treeNode *node1, treeNode *node2) {
     }
 }
 
-treeNode *traversalLeftChild(treeNode *node1, treeNode *node2) {
-    treeNode *temp = node1;
-    if (temp != NULL) {
-        while (temp->child[0]->sibling != NULL) {
-            temp = temp->child[0]->sibling;
-        }
-        temp->child[0]->sibling = node2;
-        return node1;
-    } else {
-        return node2;
-    }
-}
-
 treeNode *createNode() {
     treeNode *newNode = (treeNode*) malloc(sizeof(treeNode));
     int i;
