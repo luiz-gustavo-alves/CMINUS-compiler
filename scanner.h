@@ -72,7 +72,6 @@ static int dfaTable[DFA_STATES_COUNT][DFA_TRANSITIONS_COUNT] = {
 
 static int finalStates[DFA_STATES_COUNT] = {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
-void initializeBuffers();
 int getTokenType(int finalState);
 int isSpecialChar(char c);
 int isLetterState(int state);
@@ -82,4 +81,4 @@ int getNextDFAstate(int dfaTable[DFA_STATES_COUNT][DFA_TRANSITIONS_COUNT], char 
 token getToken(int finalState);
 token lexicalAnalysis();
 
-#endif /* SCANNER_H */
+#endif 
