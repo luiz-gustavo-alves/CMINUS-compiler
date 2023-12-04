@@ -1,12 +1,12 @@
 #include "syntaxTree.h"
 #include "scanner.h"
+#include "parserHelper.h"
 #include "token.h"
 #include "utils.h"
 
 int treeSize = 0;
 
 treeNode *createNode() {
-
     treeNode *newNode = (treeNode*) malloc(sizeof(treeNode));
     int i;
     for (i = 0; i < CHILD_MAX_NODES; i++) {
@@ -18,7 +18,6 @@ treeNode *createNode() {
 }
 
 treeNode *createDeclNode(declType node) {
-
     treeNode *newNode = createNode();
     newNode->node = decl;
     newNode->subType.decl = node;
@@ -26,7 +25,6 @@ treeNode *createDeclNode(declType node) {
 }
 
 treeNode *createStmtNode(stmtType node) {
-
     treeNode *newNode = createNode();
     newNode->node = stmt;
     newNode->subType.stmt = node;
@@ -34,11 +32,168 @@ treeNode *createStmtNode(stmtType node) {
 }
 
 treeNode *createExpNode(expType node) {
-
     treeNode *newNode = createNode();
     newNode->node = exp;
     newNode->subType.exp = node;
     return newNode;
+}
+
+treeNode *createDeclVarNode(declType declVar, treeNode *expType) {
+    treeNode *declVarNode = createDeclNode(declVar);
+    declVarNode->key.name = expName;
+    declVarNode->line = currentLine;
+    declVarNode->type = expType->type;
+
+    expType->child[0] = declVarNode;
+    return expType;
+}
+
+treeNode *createArrayDeclVarNode(expType expNum, declType declVar, treeNode *expType) {
+    treeNode *expNumNode = createExpNode(expNum);
+    expNumNode->key.value = atoi(tokenNUM);
+    expNumNode->type = Integer;
+
+    treeNode *declVarNode = createDeclNode(declVar);
+    declVarNode->key.name = expName;
+    declVarNode->line = currentLine;
+    declVarNode->child[0] = expNumNode;
+
+    if (expType->type == Integer) {
+        declVarNode->type = Array;
+    } else {
+        declVarNode->type = Void;    
+    }
+
+    expType->child[0] = declVarNode;
+    return expType;
+}
+
+treeNode *createDeclFuncNode(declType declFunc, treeNode *expType, treeNode *params, treeNode *blocDecl) {
+    treeNode* declFuncNode = createDeclNode(declFunc);
+    declFuncNode->child[0] = params;
+    declFuncNode->child[1] = blocDecl;
+    declFuncNode->key.name = functionName;
+    declFuncNode->line = functionCurrentLine;
+    declFuncNode->type = expType->type;
+                
+    expType->child[0] = declFuncNode;
+    return expType;
+}
+
+treeNode *createEmptyParams(expType expId) {
+    treeNode *node = createExpNode(expId);
+    node->key.name = "void";
+    node->type = Void;
+    return node;
+}
+
+treeNode *createSimpleArg(declType declVar, treeNode *expType) {
+    treeNode *declVarNode = createDeclNode(declVar);
+    declVarNode->key.name = expName;
+    declVarNode->line = currentLine;
+    declVarNode->type = expType->type;
+            
+    expType->child[0] = declVarNode;
+    return expType;
+}
+
+treeNode *createArrayArg(declType declVar, treeNode *expType) {
+    treeNode *declVarNode = createDeclNode(declVar);
+    declVarNode->key.name = expName;
+    declVarNode->line = currentLine;
+            
+    if (expType->type == Integer) {
+        declVarNode->type = Array;
+    }
+    else {
+        declVarNode->type = expType->type;
+    }
+
+    expType->child[0] = declVarNode;
+    return expType;
+}
+
+treeNode *createSimpleIfStmt(stmtType stmtIf, treeNode *exp, treeNode *stmt) {
+    treeNode *stmtIfNode = createStmtNode(stmtIf);
+    stmtIfNode->child[0] = exp;
+    stmtIfNode->child[1] = stmt;
+    return stmtIfNode;
+}
+
+treeNode *createNestedIfStmt(stmtType stmtIf, treeNode *exp, treeNode *stmt1, treeNode *stmt2) {
+    treeNode *stmtIfNode = createStmtNode(stmtIf);
+    stmtIfNode->child[0] = exp;
+    stmtIfNode->child[1] = stmt1;
+    stmtIfNode->child[2] = stmt2;
+    return stmtIfNode;
+}
+
+treeNode *createWhileStmt(stmtType stmtWhile, treeNode *exp, treeNode *stmt) {
+    treeNode *stmtWhileNode = createStmtNode(stmtWhile);
+    stmtWhileNode->child[0] = exp;
+    stmtWhileNode->child[1] = stmt;
+    return stmtWhileNode;
+}
+
+treeNode *createAssignStmt(stmtType stmtAttrib, treeNode *var, treeNode *exp) {
+    treeNode *stmtAttribNode = createStmtNode(stmtAttrib);
+    stmtAttribNode->child[0] = var;
+    stmtAttribNode->child[1] = exp;
+    stmtAttribNode->type = Integer;
+    return stmtAttribNode;
+}
+
+treeNode *createExpVar(expType expId) {
+    treeNode *expVarNode = createExpNode(expId);
+    expVarNode->key.name = expName;
+    expVarNode->line = currentLine;
+    expVarNode->type = Void;
+    return expVarNode;
+}
+
+treeNode *createArrayExpVar(expType expId, treeNode *exp) {
+    treeNode *expVarNode = createExpNode(expId);
+    expVarNode->key.name = variableName;
+    expVarNode->line = currentLine;
+    expVarNode->child[0] = exp;
+    expVarNode->type = Integer;
+    return expVarNode;
+}
+
+treeNode *createSimpleExp(expType expOp, treeNode *expSum1, treeNode *expSum2) {
+    treeNode *expOpNode = createExpNode(expOp);
+    expOpNode->child[0] = expSum1;
+    expOpNode->child[1] = expSum2;
+    return expOpNode;
+}
+
+treeNode *createSumExp(expType expOp, treeNode *expSum, treeNode *term) {
+    treeNode *expOpNode = createExpNode(expOp);
+    expOpNode->child[0] = expSum;
+    expOpNode->child[1] = term;
+    return expOpNode;
+}
+
+treeNode *createTermExp(expType expOp, treeNode *term, treeNode *factor) {
+    treeNode *expOpNode = createExpNode(expOp);
+    expOpNode->child[0] = term;
+    expOpNode->child[1] = factor;
+    return expOpNode;
+}
+
+treeNode *createExpNum(expType expNum) {
+    treeNode *expNumNode = createExpNode(expNum);
+    expNumNode->key.value = atoi(tokenNUM);
+    expNumNode->type = Integer;
+    return expNumNode;
+}
+
+treeNode *createActivationFunc(stmtType stmtFunc, treeNode *arguments, callList *list) {
+    treeNode *activationFuncNode = createStmtNode(stmtFunc);
+    activationFuncNode->child[1] = arguments; 
+    activationFuncNode->key.name = getLastCallNode(list);
+    activationFuncNode->line = currentLine;
+    return activationFuncNode;
 }
 
 void printSyntaxTree(treeNode *tree) { 

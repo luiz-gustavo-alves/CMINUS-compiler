@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "syntaxTree.h"
+#include "parserHelper.h"
 #include "scanner.h"
 #include "symtab.h"
 #include "analyze.h"
@@ -13,6 +14,9 @@ void initializeGlobals() {
 	lexicalError = 0;
 	syntaxError = 0;
 	semanticError = 0;
+
+	currentLine = 1;
+	functionCurrentLine = 1;
 }
 
 int main(int argc, char *argv[]) {
@@ -41,9 +45,9 @@ int main(int argc, char *argv[]) {
 
 		printf("\n\n* * * * * ANALISE SEMANTICA * * * * *\n\n");
 		semanticAnalysis(syntaxTree);
-		printf("Fases de analise completas!");
 
 		if (!semanticError) {
+			printf("Fases de analise completas!");
 			printf("\n\n* * * * * TABELA DE SIMBOLOS * * * * *\n\n");
 			printSymtable();
 		}

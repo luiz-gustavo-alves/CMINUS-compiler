@@ -5,14 +5,6 @@
   #include "syntaxTree.h"
   #include "parserHelper.h"
 
-  char *expName;
-  char *variableName;
-  char *functionName;
-  char *lastToken;
-
-  int currentLine = 1;
-  int functionCurrentLine = 1;
-
   treeNode *tree;
   callList list;
 %}
@@ -59,71 +51,36 @@ list_decl : list_decl decl {
                   }
                   else $$ = $2;
                 } 
-              	| decl { $$ = $1; };
+              	| 
+                decl { $$ = $1; };
 
-decl : var_decl { $$ = $1; } | func_decl { $$ = $1; };
+decl :  var_decl { $$ = $1; } 
+        | 
+        func_decl { $$ = $1; };
 
-var_decl : exp_type IDENTIFIER { 
+var_decl :  exp_type IDENTIFIER SEMICOLON {
                 expName = getTokenName(tokenID);
+                $$ = createDeclVarNode(declVar, $1);
               }
-              SEMICOLON {
-                $$ = $1;
-                YYSTYPE declNode = createDeclNode(declVar);
-                declNode->key.name = expName;
-                declNode->line = currentLine;
-                declNode->type = $1->type;
-                $$->child[0] = declNode;
-              }
-            	| exp_type IDENTIFIER { 
-                expName = getTokenName(tokenID);
-              }
-            	OBRACKET NUMBER CBRACKET SEMICOLON { 
-                  $$ = $1;
-                  YYSTYPE expNode = createExpNode(expNum);
-                  expNode->key.value = atoi(tokenNUM);
-                  expNode->type = Integer;
-
-                  YYSTYPE declNode = createDeclNode(declVar);
-                  declNode->key.name = expName;
-                  declNode->line = currentLine;
-                  declNode->child[0] = expNode;
-
-                  if ($1->type == Integer) declNode->type = Array;
-                  else declNode->type = Void;            
-                  $$->child[0] = declNode;
-                };
-
-exp_type : INT { 
-              $$ = createDeclNode(declIdType); 
-              $$->type = Integer;
-            }
-			      | VOID { 
-              $$ = createDeclNode(declIdType); 
-              $$->type = Void; 
+            |
+            exp_type IDENTIFIER OBRACKET NUMBER CBRACKET SEMICOLON {
+              expName = getTokenName(tokenID);
+              $$ = createArrayDeclVarNode(expNum, declVar, $1);  
             };
+
+exp_type : INT { $$ = createDeclNode(declIdType); $$->type = Integer; }
+			     | 
+           VOID { $$ = createDeclNode(declIdType); $$->type = Void; };
 
 func_decl : exp_type IDENTIFIER {
                 functionName = getTokenName(tokenID);
                 functionCurrentLine = lineCount;
               }
-              OPARENT params CPARENT bloc_decl {
-				        $$ = $1;
-                YYSTYPE declNode = createDeclNode(declFunc);
+              OPARENT params CPARENT bloc_decl { $$ = createDeclFuncNode(declFunc, $1, $5, $7); };
 
-                declNode->child[0] = $5;
-                declNode->child[1] = $7;
-                declNode->key.name = functionName;
-                declNode->line = functionCurrentLine;
-                declNode->type = $1->type;                
-                $$->child[0] = declNode;
-              };
-
-params : list_params { $$ = $1; } 
-		      | VOID { 
-			      $$ = createExpNode(expId); 
-			      $$->key.name = "void"; 
-			      $$->type = Void; 
-		      };
+params :  list_params { $$ = $1; } 
+		      | 
+          VOID { $$ = createEmptyParams(expId); };
 
 list_params : list_params COMMA arg {                 
 				        YYSTYPE node = $1;
@@ -134,33 +91,12 @@ list_params : list_params COMMA arg {
                 }
                 else $$ = $3;
               }
-			        | arg { $$ = $1; };
+			        | 
+              arg { $$ = $1; };
 
-arg : exp_type IDENTIFIER {
-            $$ = $1;
-            expName = getTokenName(tokenID);
-
-            YYSTYPE declNode = createDeclNode(declVar); 
-
-            declNode->key.name = expName;
-            declNode->line = currentLine;
-            declNode->type = $1->type;
-            
-            $$->child[0] = declNode;
-          } | exp_type IDENTIFIER {
-            expName = getTokenName(tokenID);
-          }
-    	    OBRACKET CBRACKET {    
-            $$ = $1;
-            YYSTYPE declNode = createDeclNode(declVar);
-
-            declNode->key.name = expName;
-            declNode->line = currentLine;
-            
-            if ($1->type == Integer) declNode->type = Array;
-            else declNode->type = $1->type;
-            $$->child[0] = declNode;
-          };
+arg :   exp_type IDENTIFIER { expName = getTokenName(tokenID); $$ = createSimpleArg(declVar, $1); } 
+        | 
+        exp_type IDENTIFIER OBRACKET CBRACKET { expName = getTokenName(tokenID); $$ = createArrayArg(declVar, $1); };
   
 bloc_decl : OKEY local_decl list_stmt CKEY { 
               YYSTYPE node = $2;                                
@@ -184,7 +120,7 @@ local_decl : local_decl var_decl {
 				        | { $$ = NULL; };
 
 list_stmt : list_stmt stmt {    
-				      YYSTYPE node = $1;                      
+				      YYSTYPE node = $1;                     
               if (node != NULL) {
 					      while (node->sibling != NULL) node = node->sibling;
                 node->sibling = $2;
@@ -192,156 +128,92 @@ list_stmt : list_stmt stmt {
               }
               else $$ = $2;
             }
-				    | { $$ = NULL; };
+				    | 
+            { $$ = NULL; };
 
-stmt : exp_decl     { $$ = $1; }
-     | bloc_decl    { $$ = $1; }
-     | cond_decl    { $$ = $1; }
-     | loop_decl    { $$ = $1; }
-     | return_decl  { $$ = $1; };
+stmt :  exp_decl     { $$ = $1; }
+        | 
+        bloc_decl    { $$ = $1; }
+        | 
+        cond_decl    { $$ = $1; }
+        | 
+        loop_decl    { $$ = $1; }
+        | 
+        return_decl  { $$ = $1; };
 
-exp_decl : exp SEMICOLON { $$ = $1; } | SEMICOLON { $$ = NULL; };
+exp_decl :  exp SEMICOLON { $$ = $1; } 
+            | 
+            SEMICOLON { $$ = NULL; };
 
-cond_decl : IF OPARENT exp CPARENT stmt { 
-                $$ = createStmtNode(stmtIf);
-                $$->child[0] = $3;
-                $$->child[1] = $5;
-              }
-              | IF OPARENT exp CPARENT stmt ELSE stmt { 
-                $$ = createStmtNode(stmtIf);
-                $$->child[0] = $3;
-                $$->child[1] = $5;
-                $$->child[2] = $7;
-              };
+cond_decl : IF OPARENT exp CPARENT stmt { $$ = createSimpleIfStmt(stmtIf, $3, $5); }
+            |
+            IF OPARENT exp CPARENT stmt ELSE stmt { $$ = createNestedIfStmt(stmtIf, $3, $5, $7); };
 
-loop_decl : WHILE OPARENT exp CPARENT stmt { 
-              $$ = createStmtNode(stmtWhile);
-              $$->child[0] = $3;
-              $$->child[1] = $5;
-            };
+loop_decl : WHILE OPARENT exp CPARENT stmt { $$ = createWhileStmt(stmtWhile, $3, $5); };
 
-return_decl : RETURN SEMICOLON { 
-                $$ = createStmtNode(stmtReturn);
-              }   
-              | RETURN exp SEMICOLON {	
-                $$ = createStmtNode(stmtReturn);
-                $$->child[0] = $2;
-              };
+return_decl : RETURN SEMICOLON { $$ = createStmtNode(stmtReturn); }
+              |
+              RETURN exp SEMICOLON { $$ = createStmtNode(stmtReturn); $$->child[0] = $2; };
 
-exp : var ASSIGN exp { 
-              $$ = createStmtNode(stmtAttrib);
-              $$->child[0] = $1;
-              $$->child[1] = $3;
-              $$->type = Integer;
-              $$->key.op = ASSIGN; 
-            }
-            | exp_simple { $$ = $1; };
+exp :   var ASSIGN exp { $$ = createAssignStmt(stmtAttrib, $1, $3); $$->key.op = ASSIGN; }
+        | 
+        exp_simple { $$ = $1; };
 
-var : IDENTIFIER { 
-        expName = getTokenName(tokenID);
-        $$ = createExpNode(expId);
-        $$->key.name = expName;
-        $$->line = currentLine;
-        $$->type = Void;
-      }
-      | IDENTIFIER { 
-        variableName = getTokenName(tokenID);
-      } 
-      OBRACKET exp CBRACKET {
-        $$ = createExpNode(expId);
-        $$->key.name = variableName;
-        $$->line = currentLine;
-        $$->child[0] = $4;
-        $$->type = Integer; 
-      };
+var :   IDENTIFIER { expName = getTokenName(tokenID); $$ = createExpVar(expId); }
+        | 
+        IDENTIFIER { 
+          variableName = getTokenName(tokenID);
+        } 
+        OBRACKET exp CBRACKET { $$ = createArrayExpVar(expId, $4); };
 
-exp_simple : exp_sum operator exp_sum {
-                $$ = createExpNode(expOp);  
-                $$->child[0] = $1;
-                $$->child[1] = $3;
-                $$->key.op = $2->key.op; 
-              } 
-				      | exp_sum { $$ = $1; };
+exp_simple :  exp_sum operator exp_sum { $$ = createSimpleExp(expOp, $1, $3); $$->key.op = $2->key.op; } 
+				      | 
+              exp_sum { $$ = $1; };
 
-operator : LTE { 
-              $$ = createExpNode(expId); 
-              $$->key.op = LTE; 
-            }
-            | LT { 
-              $$ = createExpNode(expId); 
-              $$->key.op = LT; 
-            }
-            | GT { 
-              $$ = createExpNode(expId); 
-              $$->key.op = GT; 
-            }
-            | GTE { 
-              $$ = createExpNode(expId); 
-              $$->key.op = GTE; 
-            }
-            | EQUAL {
-              $$ = createExpNode(expId); 
-              $$->key.op = EQUAL; 
-            }
-            | DIF {
-              $$ = createExpNode(expId); 
-              $$->key.op = DIF; 
-            };
+operator :  LTE { $$ = createExpNode(expId); $$->key.op = LTE; }
+            | 
+            LT { $$ = createExpNode(expId); $$->key.op = LT; }
+            | 
+            GT { $$ = createExpNode(expId); $$->key.op = GT; }
+            | 
+            GTE { $$ = createExpNode(expId); $$->key.op = GTE; }
+            | 
+            EQUAL { $$ = createExpNode(expId); $$->key.op = EQUAL; }
+            | 
+            DIF { $$ = createExpNode(expId); $$->key.op = DIF; };
 
-exp_sum : exp_sum sum term { 
-              $$ = createExpNode(expOp);
-              $$->child[0] = $1;
-              $$->child[1] = $3;
-              $$->key.op = $2->key.op; 
-            } 
-			      | term { $$ = $1; };
+exp_sum :   exp_sum sum term { $$ = createSumExp(expOp, $1, $3); $$->key.op = $2->key.op; }
+			      | 
+            term { $$ = $1; };
 
-sum : PLUS {
-          $$ = createExpNode(expId); 
-          $$->key.op = PLUS; 
-        }
-        | MINUS {
-          $$ = createExpNode(expId); 
-          $$->key.op = MINUS;
-        };
+sum :   PLUS { $$ = createExpNode(expId); $$->key.op = PLUS; }
+        | 
+        MINUS { $$ = createExpNode(expId); $$->key.op = MINUS; };
 
-term : term mult factor {
-            $$ = createExpNode(expOp);
-            $$->child[0] = $1;
-            $$->child[1] = $3;
-            $$->key.op = $2->key.op; 
-          }
-		      | factor { $$ = $1; };
+term :  term mult factor { $$ = createTermExp(expOp, $1, $3); $$->key.op = $2->key.op; }
+		    | 
+        factor { $$ = $1; };
 
-mult : MULT { 
-          $$ = createExpNode(expId); 
-          $$->key.op = MULT;
-        }
-        | SLASH {
-          $$ = createExpNode(expId); 
-          $$->key.op = SLASH;
-        };
+mult :  MULT { $$ = createExpNode(expId); $$->key.op = MULT; }
+        |
+        SLASH { $$ = createExpNode(expId); $$->key.op = SLASH; };
 
-factor : OPARENT exp CPARENT { $$ = $1; }
-        | var { $$ = $1; }
-        | activate { $$ = $1; }
-        | NUMBER { 
-          $$ = createExpNode(expNum);
-          $$->key.value = atoi(tokenNUM);
-          $$->type = Integer;
-        };
+factor :  OPARENT exp CPARENT { $$ = $1; }
+          | 
+          var { $$ = $1; }
+          | 
+          activate { $$ = $1; }
+          | 
+          NUMBER { $$ = createExpNum(expNum); };
 
 activate : IDENTIFIER {
-            insertNode(&list, getTokenName(tokenID));
+            insertCallNode(&list, getTokenName(tokenID));
           }
-          OPARENT arguments CPARENT {   
-              $$ = createStmtNode(stmtFunc);
-              $$->child[1] = $4; 
-              $$->key.name = getLastNode(&list);
-              $$->line = currentLine;
-            };
+          OPARENT arguments CPARENT { $$ = createActivationFunc(stmtFunc, $4, &list); };
 
-arguments : list_arg { $$ = $1; } | { $$ = NULL; };
+arguments :   list_arg { $$ = $1; }
+              |
+              { $$ = NULL; };
 
 list_arg : list_arg COMMA exp { 
                 YYSTYPE node = $1;
@@ -375,13 +247,14 @@ int yylex() {
 }
 
 treeNode *parse() { 
-
 	yyparse(); 
 	return tree; 
 }
 
 int yyerror(char *errorMsg) {
-	if (lexicalError) return 1;
+	if (lexicalError) {
+    return 1;
+  }
 
   printf("(!) ERRO SINTATICO: Linha: %d | Token: %s\n", lineCount, lastToken);
   syntaxError = 1;
