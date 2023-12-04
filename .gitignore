@@ -3,4 +3,7 @@
 !*.*
 *.o
 
+!Makefile
+
+parser.output
 .vscode
