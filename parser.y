@@ -42,15 +42,7 @@
 %%
 program : list_decl { tree = $1; };
 
-list_decl : list_decl decl { 
-                YYSTYPE node = $1;
-                if (node != NULL)  {
-					        while (node->child[0]->sibling != NULL) node = node->child[0]->sibling;
-                    node->child[0]->sibling = $2;
-                    $$ = $1;
-                  }
-                  else $$ = $2;
-                } 
+list_decl :     list_decl decl { $$ = traversalLeftChild($1, $2); } 
               	| 
                 decl { $$ = $1; };
 
@@ -82,52 +74,21 @@ params :  list_params { $$ = $1; }
 		      | 
           VOID { $$ = createEmptyParams(expId); };
 
-list_params : list_params COMMA arg {                 
-				        YYSTYPE node = $1;
-                if (node != NULL) {
-                  while (node->sibling != NULL) node = node->sibling;
-                  node->sibling = $3;
-                  $$ = $1;
-                }
-                else $$ = $3;
-              }
+list_params : list_params COMMA arg { $$ = traversal($1, $3); }
 			        | 
               arg { $$ = $1; };
 
-arg :   exp_type IDENTIFIER { expName = getTokenName(tokenID); $$ = createSimpleArg(declVar, $1); } 
+arg :   exp_type IDENTIFIER { expName = getTokenName(tokenID); $$ = createDeclVarNode(declVar, $1); } 
         | 
         exp_type IDENTIFIER OBRACKET CBRACKET { expName = getTokenName(tokenID); $$ = createArrayArg(declVar, $1); };
   
-bloc_decl : OKEY local_decl list_stmt CKEY { 
-              YYSTYPE node = $2;                                
-              if (node != NULL) {
-                  while (node->sibling != NULL) node = node->sibling;
-                  node->sibling = $3;
-                  $$ = $2;
-              }
-              else $$ = $3;
-            };
+bloc_decl : OKEY local_decl list_stmt CKEY { $$ = traversal($2, $3); }
 
-local_decl : local_decl var_decl {
-                  YYSTYPE node = $1;                  
-                  if (node != NULL) {
-                    while (node->sibling != NULL) node = node->sibling;
-                    node->sibling = $2;
-                    $$ = $1;
-                  }
-                  else $$ = $2;
-                } 
-				        | { $$ = NULL; };
+local_decl :  local_decl var_decl { $$ = traversal($1, $2); }
+				      | 
+              { $$ = NULL; };
 
-list_stmt : list_stmt stmt {    
-				      YYSTYPE node = $1;                     
-              if (node != NULL) {
-					      while (node->sibling != NULL) node = node->sibling;
-                node->sibling = $2;
-                $$ = $1;
-              }
-              else $$ = $2;
-            }
+list_stmt : list_stmt stmt { $$ = traversal($1, $2); }
 				    | 
             { $$ = NULL; };
 
@@ -145,9 +106,9 @@ exp_decl :  exp SEMICOLON { $$ = $1; }
             | 
             SEMICOLON { $$ = NULL; };
 
-cond_decl : IF OPARENT exp CPARENT stmt { $$ = createSimpleIfStmt(stmtIf, $3, $5); }
+cond_decl : IF OPARENT exp CPARENT stmt { $$ = createIfStmt(stmtIf, $3, $5, NULL); }
             |
-            IF OPARENT exp CPARENT stmt ELSE stmt { $$ = createNestedIfStmt(stmtIf, $3, $5, $7); };
+            IF OPARENT exp CPARENT stmt ELSE stmt { $$ = createIfStmt(stmtIf, $3, $5, $7); };
 
 loop_decl : WHILE OPARENT exp CPARENT stmt { $$ = createWhileStmt(stmtWhile, $3, $5); };
 
@@ -166,7 +127,7 @@ var :   IDENTIFIER { expName = getTokenName(tokenID); $$ = createExpVar(expId); 
         } 
         OBRACKET exp CBRACKET { $$ = createArrayExpVar(expId, $4); };
 
-exp_simple :  exp_sum operator exp_sum { $$ = createSimpleExp(expOp, $1, $3); $$->key.op = $2->key.op; } 
+exp_simple :  exp_sum operator exp_sum { $$ = createExpOp(expOp, $1, $3); $$->key.op = $2->key.op; } 
 				      | 
               exp_sum { $$ = $1; };
 
@@ -182,7 +143,7 @@ operator :  LTE { $$ = createExpNode(expId); $$->key.op = LTE; }
             | 
             DIF { $$ = createExpNode(expId); $$->key.op = DIF; };
 
-exp_sum :   exp_sum sum term { $$ = createSumExp(expOp, $1, $3); $$->key.op = $2->key.op; }
+exp_sum :   exp_sum sum term { $$ = createExpOp(expOp, $1, $3); $$->key.op = $2->key.op; }
 			      | 
             term { $$ = $1; };
 
@@ -190,7 +151,7 @@ sum :   PLUS { $$ = createExpNode(expId); $$->key.op = PLUS; }
         | 
         MINUS { $$ = createExpNode(expId); $$->key.op = MINUS; };
 
-term :  term mult factor { $$ = createTermExp(expOp, $1, $3); $$->key.op = $2->key.op; }
+term :  term mult factor { $$ = createExpOp(expOp, $1, $3); $$->key.op = $2->key.op; }
 		    | 
         factor { $$ = $1; };
 
@@ -207,7 +168,7 @@ factor :  OPARENT exp CPARENT { $$ = $1; }
           NUMBER { $$ = createExpNum(expNum); };
 
 activate : IDENTIFIER {
-            insertCallNode(&list, getTokenName(tokenID));
+            insertNodeCallList(&list, getTokenName(tokenID));
           }
           OPARENT arguments CPARENT { $$ = createActivationFunc(stmtFunc, $4, &list); };
 
@@ -215,17 +176,11 @@ arguments :   list_arg { $$ = $1; }
               |
               { $$ = NULL; };
 
-list_arg : list_arg COMMA exp { 
-                YYSTYPE node = $1;
-                if (node != NULL) {
-                    while (node->sibling != NULL) node = node->sibling;
-                    node->sibling = $3;
-                    $$ = $1;
-                }
-                else $$ = $3;
-              }
-			        | arg { $$ = $1; } 
-			        | exp { $$ = $1; };
+list_arg :  list_arg COMMA exp { $$ = traversal($1, $3); }
+			      | 
+            arg { $$ = $1; } 
+			      | 
+            exp { $$ = $1; };
 
 %%
 
@@ -246,7 +201,8 @@ int yylex() {
   return tk.type;
 }
 
-treeNode *parse() { 
+treeNode *parse() {
+  initCallList(&list);
 	yyparse(); 
 	return tree; 
 }

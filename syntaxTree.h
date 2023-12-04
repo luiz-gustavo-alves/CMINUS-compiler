@@ -15,6 +15,9 @@ typedef enum { stmtAttrib, stmtFunc, stmtIf, stmtReturn, stmtWhile } stmtType;
 /* Operation types (+) (-) (*) (/) (=) (<) (>) (<=) (>=) (!=) (==) */
 typedef enum { plus, minus, mult, slash, assign, lt, gt, lte, gte, dif, equal } opType;
 
+/* Primitive data types */
+typedef enum { Array, Boolean, Integer, Void } primitiveType;
+
 /* Syntax tree  */
 typedef struct treeNode {
     struct treeNode *child[CHILD_MAX_NODES];
@@ -29,6 +32,8 @@ typedef struct treeNode {
 } treeNode;
 
 treeNode *parse();
+treeNode *traversal(treeNode *node1, treeNode *node2);
+treeNode *traversalLeftChild(treeNode *node1, treeNode *node2);
 treeNode *createDeclNode(declType node);
 treeNode *createExpNode(expType node);
 treeNode *createStmtNode(stmtType node);
@@ -36,17 +41,13 @@ treeNode *createDeclVarNode(declType declVar, treeNode *expType);
 treeNode *createArrayDeclVarNode(expType expNum, declType declVar, treeNode *expType);
 treeNode *createDeclFuncNode(declType declFunc, treeNode *expType, treeNode *params, treeNode *blocDecl);
 treeNode *createEmptyParams(expType expId);
-treeNode *createSimpleArg(declType declVar, treeNode *expType);
 treeNode *createArrayArg(declType declVar, treeNode *expType);
-treeNode *createSimpleIfStmt(stmtType stmtIf, treeNode *exp, treeNode *stmt);
-treeNode *createNestedIfStmt(stmtType stmtIf, treeNode *exp, treeNode *stmt1, treeNode *stmt2);
+treeNode *createIfStmt(stmtType stmtIf, treeNode *exp, treeNode *stmt1, treeNode *stmt2);
 treeNode *createWhileStmt(stmtType stmtWhile, treeNode *exp, treeNode *stmt);
 treeNode *createAssignStmt(stmtType stmtAttrib, treeNode *var, treeNode *exp);
 treeNode *createExpVar(expType expId);
 treeNode *createArrayExpVar(expType expId, treeNode *exp);
-treeNode *createSimpleExp(expType expOp, treeNode *expSum1, treeNode *expSum2);
-treeNode *createSumExp(expType expOp, treeNode *expSum, treeNode *term);
-treeNode *createTermExp(expType expOp, treeNode *term, treeNode *factor);
+treeNode *createExpOp(expType expOp, treeNode *exp1, treeNode *exp2);
 treeNode *createExpNum(expType expNum);
 treeNode *createActivationFunc(stmtType stmtFunc, treeNode *arguments, callList *list);
 

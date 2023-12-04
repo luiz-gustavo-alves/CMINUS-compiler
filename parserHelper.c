@@ -2,44 +2,52 @@
 #include "syntaxTree.h"
 #include "parserHelper.h"
 
-callList *head = NULL;
+void initCallList(callList *list) {
+    list->head = NULL;
+    list->tail = NULL;
+}
 
-void insertCallNode(callList *list, char *name) {
+void insertNodeCallList(callList *list, char *name) {
 
-    callList *newItem = (callList *)malloc(sizeof(callList));
-    newItem->name = name;
-    if (head == NULL) {
-        head = newItem;
+    callListNode *node = (callListNode *)malloc(sizeof(callListNode));
+    node->funcName = name;
+    node->prev = list->tail;
+    node->next = NULL;
+
+    if (list->head == NULL) {
+        list->head = node;
+        list->tail = node;
     }
     else {
-        callList *temp = head;
-        while (temp->next != NULL) {
-            temp = temp->next;
-        }
-        temp->next = newItem;
+        list->tail->next = node;
+        list->tail = node;
     }
 }
 
-char *getLastCallNode(callList *list) {
-    if (head == NULL)
+char *getLastNodeCallList(callList *list) {
+    if (list->tail == NULL) {
         return NULL;
-
-    if (head->next == NULL) {
-        char *name = strdup(head->name);
-        free(head);
-        return name;
     }
 
-    callList *secondLast = head;
-    while (secondLast->next->next != NULL) {
-        secondLast = secondLast->next;
+    if (list->head == list->tail) {
+        callListNode *lastNode = list->tail;
+        list->head = NULL;
+        list->tail = NULL;
+        return lastNode->funcName;
     }
-        
-    char *name = strdup(secondLast->next->name);
-    free(secondLast->next);
 
-    secondLast->next = NULL;
-    return name;
+    callListNode *lastNode = list->tail;
+    list->tail = lastNode->prev;
+
+    if (list->tail != NULL) {
+        list->tail->next = NULL;
+    }
+
+    if (lastNode != list->head) {
+        lastNode->prev = NULL;
+    }
+
+    return lastNode->funcName;
 }
 
 char *getTokenName(char *token) {

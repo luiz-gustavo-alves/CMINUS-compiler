@@ -6,6 +6,32 @@
 
 int treeSize = 0;
 
+treeNode *traversal(treeNode *node1, treeNode *node2) {
+    treeNode *temp = node1;
+    if (temp != NULL) {
+        while (temp->sibling != NULL) {
+            temp = temp->sibling;
+        }
+        temp->sibling = node2;
+        return node1;
+    } else {
+        return node2;
+    }
+}
+
+treeNode *traversalLeftChild(treeNode *node1, treeNode *node2) {
+    treeNode *temp = node1;
+    if (temp != NULL) {
+        while (temp->child[0]->sibling != NULL) {
+            temp = temp->child[0]->sibling;
+        }
+        temp->child[0]->sibling = node2;
+        return node1;
+    } else {
+        return node2;
+    }
+}
+
 treeNode *createNode() {
     treeNode *newNode = (treeNode*) malloc(sizeof(treeNode));
     int i;
@@ -87,16 +113,6 @@ treeNode *createEmptyParams(expType expId) {
     return node;
 }
 
-treeNode *createSimpleArg(declType declVar, treeNode *expType) {
-    treeNode *declVarNode = createDeclNode(declVar);
-    declVarNode->key.name = expName;
-    declVarNode->line = currentLine;
-    declVarNode->type = expType->type;
-            
-    expType->child[0] = declVarNode;
-    return expType;
-}
-
 treeNode *createArrayArg(declType declVar, treeNode *expType) {
     treeNode *declVarNode = createDeclNode(declVar);
     declVarNode->key.name = expName;
@@ -113,18 +129,13 @@ treeNode *createArrayArg(declType declVar, treeNode *expType) {
     return expType;
 }
 
-treeNode *createSimpleIfStmt(stmtType stmtIf, treeNode *exp, treeNode *stmt) {
-    treeNode *stmtIfNode = createStmtNode(stmtIf);
-    stmtIfNode->child[0] = exp;
-    stmtIfNode->child[1] = stmt;
-    return stmtIfNode;
-}
-
-treeNode *createNestedIfStmt(stmtType stmtIf, treeNode *exp, treeNode *stmt1, treeNode *stmt2) {
+treeNode *createIfStmt(stmtType stmtIf, treeNode *exp, treeNode *stmt1, treeNode *stmt2) {
     treeNode *stmtIfNode = createStmtNode(stmtIf);
     stmtIfNode->child[0] = exp;
     stmtIfNode->child[1] = stmt1;
-    stmtIfNode->child[2] = stmt2;
+    if (stmt2 != NULL) {
+        stmtIfNode->child[2] = stmt2;
+    }
     return stmtIfNode;
 }
 
@@ -132,6 +143,7 @@ treeNode *createWhileStmt(stmtType stmtWhile, treeNode *exp, treeNode *stmt) {
     treeNode *stmtWhileNode = createStmtNode(stmtWhile);
     stmtWhileNode->child[0] = exp;
     stmtWhileNode->child[1] = stmt;
+    stmtWhileNode->type = Boolean;
     return stmtWhileNode;
 }
 
@@ -160,24 +172,10 @@ treeNode *createArrayExpVar(expType expId, treeNode *exp) {
     return expVarNode;
 }
 
-treeNode *createSimpleExp(expType expOp, treeNode *expSum1, treeNode *expSum2) {
+treeNode *createExpOp(expType expOp, treeNode *exp1, treeNode *exp2) {
     treeNode *expOpNode = createExpNode(expOp);
-    expOpNode->child[0] = expSum1;
-    expOpNode->child[1] = expSum2;
-    return expOpNode;
-}
-
-treeNode *createSumExp(expType expOp, treeNode *expSum, treeNode *term) {
-    treeNode *expOpNode = createExpNode(expOp);
-    expOpNode->child[0] = expSum;
-    expOpNode->child[1] = term;
-    return expOpNode;
-}
-
-treeNode *createTermExp(expType expOp, treeNode *term, treeNode *factor) {
-    treeNode *expOpNode = createExpNode(expOp);
-    expOpNode->child[0] = term;
-    expOpNode->child[1] = factor;
+    expOpNode->child[0] = exp1;
+    expOpNode->child[1] = exp2;
     return expOpNode;
 }
 
@@ -191,7 +189,7 @@ treeNode *createExpNum(expType expNum) {
 treeNode *createActivationFunc(stmtType stmtFunc, treeNode *arguments, callList *list) {
     treeNode *activationFuncNode = createStmtNode(stmtFunc);
     activationFuncNode->child[1] = arguments; 
-    activationFuncNode->key.name = getLastCallNode(list);
+    activationFuncNode->key.name = getLastNodeCallList(list);
     activationFuncNode->line = currentLine;
     return activationFuncNode;
 }

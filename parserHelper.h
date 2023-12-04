@@ -17,14 +17,20 @@ int functionCurrentLine;
 int yylex();
 int yyerror(char *errorMsg);
 
+typedef struct callListNode {
+    char *funcName;
+    struct callListNode* next;
+	struct callListNode *prev;
+} callListNode;
+
 typedef struct callList {
-	
-	char *name;
-	struct callList *next;
+    struct callListNode* head;
+    struct callListNode* tail;
 } callList;
 
-void insertCallNode(callList *list, char *name);
-char *getLastCallNode(callList *list);
+void initCallList(callList *list);
+void insertNodeCallList(callList *list, char *name);
+char *getLastNodeCallList(callList *list);
 char *getTokenName(char *token);
 
 #endif
