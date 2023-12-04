@@ -7,13 +7,13 @@ symTable hashValue;
 int varCount = 1;
 
 int createHashKey(char * key) { 
-	int asciiVal = 0;
+	int ascii = 0;
     int i = 0;
     while (key[i] != '\0') {
-        asciiVal += (int) key[i];
+        ascii += (int) key[i];
         i++;
     }
-    return asciiVal % HASHTABLE_LEN;
+    return ascii % HASHTABLE_LEN;
 }
 
 symTable getHashValue(char *name) {
@@ -21,50 +21,68 @@ symTable getHashValue(char *name) {
 	return hashtable[hashKey];
 }
 
-void insertSymtable(char *name, int line, char *scope, primitiveType type, idType idType) {
-	
+void createHashValue(int line) {
+
+    hashValue->lines = (lineList) malloc(sizeof(struct lineList));
+    hashValue->lines->line = line;
+    hashValue->lines->next = NULL;
+    hashValue->next = hashtable[hashKey];
+    hashtable[hashKey] = hashValue; 
+}
+
+void insertNewHashLines(int line) {
+
+    lineList hashLines = hashValue->lines;
+    while (hashLines->next != NULL) {
+        hashLines = hashLines->next;
+    }
+    hashLines->next = (lineList) malloc(sizeof(struct lineList));
+    hashLines->next->line = line;
+    hashLines->next->next = NULL;
+}
+
+void insertFuncSymtable(char *name, int line, primitiveType type) {
+
 	hashValue = getHashValue(name);
-    while (hashValue != NULL && (strcmp(name, hashValue->name) != 0 || strcmp(hashValue->scope, scope) != 0)) {
+    if (hashValue != NULL) {
+        insertNewHashLines(line);
+    } else {
+        hashValue = (symTable) malloc(sizeof(struct symTable));
+        hashValue->name = name;
+        hashValue->type = type;
+        hashValue->id = isFunc;
+        hashValue->scope = "global";
+        createHashValue(line);
+    }
+}
+
+void insertVarSymtable(char *name, int line, char *scope, primitiveType type) {
+
+    hashValue = getHashValue(name);
+    while (hashValue != NULL && (strcmp(hashValue->name, name) != 0 || strcmp(hashValue->scope, scope) != 0)) {
         hashValue = hashValue->next;
     }
 
-    if (hashValue == NULL) {
-		hashValue = (symTable) malloc(sizeof(struct symTable));
-        if (idType == isVar) {
-            hashValue->idNumber = varCount;
-            varCount++;
-        }
+    if (hashValue != NULL) {
+        insertNewHashLines(line);
+    } else {
+		hashValue = (symTable) malloc(sizeof(struct symTable));        
+        hashValue->name = name;
+        hashValue->type = type;
+        hashValue->id = isVar;
 
-        if (COMP_DIF(scope, "global")) {
+        /* Check variable scope (global or function scope) */
+        if (strcmp(scope, "global") == 1) {
             char* scope_global = malloc(sizeof(char));
             strcat(scope_global, "global");
             hashValue->scope = scope_global;
-        } 
-		else {
+        } else {
             hashValue->scope = scope;
         }
-        
-        hashValue->name = name;
-        hashValue->id = idType;
-        hashValue->type = type;
 
-        hashValue->lines = (lineList) malloc(sizeof(struct lineList));
-        hashValue->lines->line = line;
-        hashValue->lines->next = NULL;
-
-        hashValue->next = hashtable[hashKey];
-        hashtable[hashKey] = hashValue; 
-    } 
-	else {
-
-        lineList hashLines = hashValue->lines;
-        while (hashLines->next != NULL) {
-            hashLines = hashLines->next;
-        }
-
-        hashLines->next = (lineList) malloc(sizeof(struct lineList));
-        hashLines->next->next = NULL;
-        hashLines->next->line = line;
+        hashValue->idNumber = varCount;
+        varCount++;
+        createHashValue(line);
     }
 }
 

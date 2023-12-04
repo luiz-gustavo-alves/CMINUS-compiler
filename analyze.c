@@ -2,9 +2,6 @@
 #include "symtab.h"
 #include "token.h"
 
-#define COMP_EQUAL(str1, str2) (strcmp(str1, str2) == 0)
-#define COMP_DIF(str1, str2) (strcmp(str1, str2) == 1)
-
 int mainFuncDecl = 0;
 
 int validateDeclFunc(treeNode *tree) {
@@ -13,17 +10,17 @@ int validateDeclFunc(treeNode *tree) {
         return throwSemanticError(tree, "Declaracao de funcao depois da funcao main.");
 	}
 
-	if (COMP_EQUAL(tree->key.name, "input") || COMP_EQUAL(tree->key.name, "output")) {
+	if (strcmp(tree->key.name, "input") == 0 || strcmp(tree->key.name, "output") == 0) {
 	    return throwSemanticError(tree, "Funcao reservada.");
 	}
 
-	if (COMP_EQUAL(tree->key.name, "main")) {
+	if (strcmp(tree->key.name, "main") == 0) {
 		mainFuncDecl = 1;
 	}
 
 	int funcDeclared = checkIdDeclaration(tree->key.name);
 	if (!funcDeclared) {
-		insertSymtable(tree->key.name, tree->line, "global", tree->type, isFunc);
+		insertFuncSymtable(tree->key.name, tree->line, tree->type);
 		currentScope = tree->key.name;
 	} else {
 		int funcIsNotVar = checkVarIsFunc(tree->key.name);
@@ -41,7 +38,7 @@ int validateDeclVar(treeNode *tree) {
 		return throwSemanticError(tree, "Declaracao de variavel do tipo VOID.");
 	}
 
-    if (COMP_DIF(currentScope, "global")) {
+    if (strcmp(currentScope, "global") == 1) {
         return throwSemanticError(tree, "Variavel global ja declarada.");
     }
 
@@ -52,11 +49,11 @@ int validateDeclVar(treeNode *tree) {
 
 	int varDeclared = checkIdDeclaration(tree->key.name);
 	if (!varDeclared) {
-		insertSymtable(tree->key.name, tree->line, currentScope, tree->type, isVar);
+		insertVarSymtable(tree->key.name, tree->line, currentScope, tree->type);
 	} else {
 		int varNotInCurrentScope = checkScope(tree->key.name, currentScope);
 		if (!varNotInCurrentScope) {
-            insertSymtable(tree->key.name, tree->line, currentScope, tree->type, isVar);
+            insertVarSymtable(tree->key.name, tree->line, currentScope, tree->type);
         } else {
 			return throwSemanticError(tree, "Variavel ja declarada.");
 		}
@@ -66,10 +63,10 @@ int validateDeclVar(treeNode *tree) {
 int validateStmtFunc(treeNode *tree, primitiveType *type) {
 
 	int isReservedFunc = 0;
-	if (COMP_EQUAL(tree->key.name, "input")) {
+	if (strcmp(tree->key.name, "input") == 0) {
 		tree->type = Integer; 
 		isReservedFunc = 1;
-	} else if (COMP_EQUAL(tree->key.name, "output")) {
+	} else if (strcmp(tree->key.name, "output") == 0) {
 		tree->type = Void;
 		isReservedFunc = 1;
 	}
@@ -84,13 +81,13 @@ int validateStmtFunc(treeNode *tree, primitiveType *type) {
 	} else {
 		getIdType(tree->key.name, type);
 		tree->type = *type;
-		insertSymtable(tree->key.name, tree->line, "global", tree->type, isFunc);
+		insertFuncSymtable(tree->key.name, tree->line, tree->type);
 	}
 }
 
 int validateExpId(treeNode *tree, primitiveType *type) {
 
-	if (COMP_EQUAL(tree->key.name, "void")) {
+	if (strcmp(tree->key.name, "void") == 0) {
 		return 0;
 	}
 
@@ -105,7 +102,7 @@ int validateExpId(treeNode *tree, primitiveType *type) {
 		if (tree->type == Void) {
 			tree->type = *type;
 		}
-		insertSymtable(tree->key.name, tree->line, currentScope, tree->type, isVar);
+		insertVarSymtable(tree->key.name, tree->line, currentScope, tree->type);
 	} else {
 		int varGlobal = checkScope(tree->key.name, "global");
 		if (!varGlobal) {
@@ -115,7 +112,7 @@ int validateExpId(treeNode *tree, primitiveType *type) {
 			if (tree->type == Void) {
 				tree->type = *type;
 			}
-			insertSymtable(tree->key.name, tree->line, "global", tree->type, isVar);
+			insertVarSymtable(tree->key.name, tree->line, "global", tree->type);
 		}
 	}
 }
@@ -220,8 +217,7 @@ void semanticAnalysis(treeNode *tree) {
     if (!mainFuncDecl && !semanticError) {
 		printf("(!) ERRO SEMANTICO: Funcao main nao foi declarada.\n");
         semanticError = 1;
-    }
-	else {
+    } else {
 		/* Check variable, numeric, expression types and operations */
 		postOrderTraversal(tree);	
 	}

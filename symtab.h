@@ -33,7 +33,8 @@ int checkIdDeclaration(char *name);
 int checkScope(char *name, char *scope);
 void getIdType(char *name, primitiveType *type);
 
-void insertSymtable(char *name, int line, char *scope, primitiveType type, idType idType);
+void insertFuncSymtable(char *name, int line, primitiveType type);
+void insertVarSymtable(char *name, int line, char *scope, primitiveType type);
 void printSymtable();
 
-#endif /* SYMTAB_H */
+#endif

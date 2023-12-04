@@ -1,9 +1,6 @@
 #ifndef ANALYZE_H
 #define ANALYZE_H
 
-#define COMP_EQUAL(str1, str2) (strcmp(str1, str2) == 0)
-#define COMP_DIF(str1, str2) (strcmp(str1, str2) == 1)
-
 #include "utils.h"
 #include "syntaxTree.h"
 
