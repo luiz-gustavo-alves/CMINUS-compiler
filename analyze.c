@@ -151,24 +151,59 @@ void checkNodesDeclaration(treeNode *tree) {
 	}
 }
 
-void postOrderTraversal(treeNode *tree) {
+int isBooleanOp(treeNode *tree) {
+	return (tree->key.op >= TOKEN_EQUAL && tree->key.op <= TOKEN_DIF);
+}
 
-    if (tree != NULL && !semanticError) { 
-		
-		int i;
-        for (i = 0; i < CHILD_MAX_NODES; i++) 
-			postOrderTraversal(tree->child[i]);
+int validateExpOp(treeNode *tree) {
+	if ((tree->child[0]->type != Integer) || (tree->child[1]->type != Integer)) {
+		return throwSemanticError(tree, " Operacao entre nao inteiros.");
+	}
 
-        checkNodesType(tree);
-        postOrderTraversal(tree->sibling);
-    }
+	if (isBooleanOp(tree)) {
+		tree->type = Boolean;
+	}
+	else {
+		tree->type = Integer;
+	}
+}
+
+int validateStmtIf(treeNode *tree) {
+	if (tree->child[0]->type == Integer) {
+		return throwSemanticError(tree->child[0], "Condicional IF nao eh do tipo <boolean>.");
+	}
+}
+
+int validateStmtWhile(treeNode *tree) {
+	if (tree->child[0]->type == Array || tree->child[0]->type == Void) {
+		return throwSemanticError(tree->child[0], "Condicional WHILE nao eh do tipo <boolean>.");
+	}
+}
+
+int validateStmtAttrib(treeNode *tree) {
+	if (tree->child[0]->type != tree->child[1]->type) {
+		return throwSemanticError(tree->child[1], "Tipo e valor da variavel a ser atribuida nao sao condizentes.");
+	}
+}
+
+void checkNodesTypes(treeNode *tree) {
+
+	if (tree->node == exp && tree->subType.exp == expOp) {
+		validateExpOp(tree);
+	} else if (tree->node == stmt) {
+		switch (tree->subType.stmt) {
+			case stmtIf: validateStmtIf(tree); break;
+			case stmtAttrib: validateStmtAttrib(tree); break;
+			case stmtWhile: validateStmtWhile(tree); break;
+			default: break;
+		}
+	}
 }
 
 void preOrderTraversal(treeNode *tree) { 
 
     if (tree != NULL && !semanticError) {
         checkNodesDeclaration(tree);
-
 		int i;
         for (i = 0; i < CHILD_MAX_NODES; i++) {
 			preOrderTraversal(tree->child[i]);
@@ -177,70 +212,24 @@ void preOrderTraversal(treeNode *tree) {
     }
 }
 
-void checkNodesType(treeNode *tree) {
-	
-    switch (tree->node) { 
+void postOrderTraversal(treeNode *tree) {
 
-	    case exp:
-	
-	        switch (tree->subType.exp) {
-	
-	            case expOp:
-	
-	                if ((tree->child[0]->type != Integer) || (tree->child[1]->type != Integer))
-	                    throwSemanticError(tree, " Operacao entre nao inteiros.");
-	                else
-	                    tree->type = Integer;
-	                    
-	                tree->type = Integer;
-	
-	                if ((strcmp(tokenNames[1][tree->key.op - 1], "EQUAL") == 0) ||
-	                    ((strcmp(tokenNames[1][tree->key.op - 1], "DIF")) == 0)   || 
-	                    ((strcmp(tokenNames[1][tree->key.op - 1], "LT")) == 0)    || 
-	                    ((strcmp(tokenNames[1][tree->key.op - 1], "LTE")) == 0)   || 
-	                    ((strcmp(tokenNames[1][tree->key.op - 1], "GT")) == 0)    || 
-	                    ((strcmp(tokenNames[1][tree->key.op - 1], "GTE")) == 0)) {
-						tree->type = Boolean;
-					}
-	                else
-	                    tree->type = Integer;
+    if (tree != NULL && !semanticError) { 
+		int i;
+        for (i = 0; i < CHILD_MAX_NODES; i++) 
+			postOrderTraversal(tree->child[i]);
 
-	           break;
-	        }
-	    break;
-
-	    case stmt:
-	
-	        switch (tree->subType.stmt) {
-	
-		        case stmtIf:
-		            
-					if (tree->child[0]->type == Integer) 
-						throwSemanticError(tree->child[0], "IF nao do tipo <boolean>."); 
-					break;
-
-		        case stmtAttrib:
-	
-		            if (tree->child[0]->type != tree->child[1]->type) 
-						throwSemanticError(tree->child[1], "Tipo da variavel e valor a ser atribuido nao condizentes.");
-		            break;
-
-		        case stmtWhile:
-	
-		            if (tree->child[0]->type == Integer) 
-						throwSemanticError(tree->child[0], "WHILE nao do tipo <boolean>.");
-		            break;
-		        }
-	    break;
+        checkNodesTypes(tree);
+        postOrderTraversal(tree->sibling);
     }
 }
 
 int throwSemanticError(treeNode *tree, char *msg) {
-    semanticError = 1;
+
+	semanticError = 1;
     if (tree->node != exp && tree->subType.exp != expId) {
         printf("(!) ERRO SEMANTICO | LINHA %d: %s\n", tree->line, msg);
-	}
-    else {
+	} else {
 		printf("(!) ERRO SEMANTICO: %s | LINHA %d: %s\n", tree->key.name, tree->line, msg);
 	}
     return semanticError;
