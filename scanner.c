@@ -5,6 +5,8 @@
 #include <ctype.h>
 #include <limits.h>
 
+int lineCount = 1;
+
 char lexem[TOKEN_MAX_LENGTH];
 char tokenID[TOKEN_MAX_LENGTH]; 
 char tokenNUM[TOKEN_MAX_LENGTH];

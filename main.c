@@ -11,8 +11,6 @@ void initializeGlobals() {
 	memset(tokenID, 0, sizeof(TOKEN_MAX_LENGTH));
 	memset(tokenNUM, 0, sizeof(TOKEN_MAX_LENGTH));
 	initializeReservedWordsHash();
-
- 	lineCount = 1;
 }
 
 int main(int argc, char *argv[]) {

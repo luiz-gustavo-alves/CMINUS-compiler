@@ -205,10 +205,6 @@ int yylex() {
 
 treeNode *parse() {
   initCallList(&list);
-  currentLine = 1;
-	functionCurrentLine = 1;
-  argsCount = 0;
-  paramsCount = 0;
 
 	yyparse(); 
 	return tree; 

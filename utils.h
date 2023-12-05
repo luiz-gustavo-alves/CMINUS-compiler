@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-FILE *file;
+extern FILE *file;
 
 extern int lexicalError;
 extern int syntaxError;

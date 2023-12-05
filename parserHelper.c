@@ -8,6 +8,11 @@ char *variableName;
 char *functionName;
 char *currentToken;
 
+int currentLine = 1;
+int functionCurrentLine = 1;
+int argsCount = 0;
+int paramsCount = 0;
+
 treeNode *createNode() {
     treeNode *newNode = (treeNode*) malloc(sizeof(treeNode));
     int i;

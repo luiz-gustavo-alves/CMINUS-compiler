@@ -1,8 +1,8 @@
 #include "token.h"
 #include "utils.h"
 
-int hashKey;
-reservedWords hashValue;
+int reservedHashKey;
+reservedWords reservedHashValue;
 
 char *tokenNames[2][27] = {
   {"if", "int", "return", "void", "else", "while", "+", "-", "*", "/", "=", "==", "<", ">", "<=", ">=", "!=", ";", ",", "(", ")", "[", "]", "{", "}", "ID", "NUM"},
@@ -28,30 +28,30 @@ int getHashKey(char *key) {
 }
 
 reservedWords getReservedWordValue(char *lexem) {
-	hashKey = getHashKey(lexem);
-	return reservedWordsHash[hashKey];
+	reservedHashKey = getHashKey(lexem);
+	return reservedWordsHash[reservedHashKey];
 }
 
 void initializeReservedWordsHash() {
     int i;
     for (i = 0; i < MAX_RESERVED_WORDS; i++) {
-        hashValue = getReservedWordValue(tokenNames[0][i]);
-        hashValue = (reservedWords) malloc(sizeof(struct reservedWords));
-        hashValue->lexem = tokenNames[0][i];
-        hashValue->type = i + 1;
-        reservedWordsHash[hashKey] = hashValue;
+        reservedHashValue = getReservedWordValue(tokenNames[0][i]);
+        reservedHashValue = (reservedWords) malloc(sizeof(struct reservedWords));
+        reservedHashValue->lexem = tokenNames[0][i];
+        reservedHashValue->type = i + 1;
+        reservedWordsHash[reservedHashKey] = reservedHashValue;
     }
 }
 
 int isReservedWord(char *lexem) {
-    hashValue = getReservedWordValue(lexem);
-    if (hashValue == NULL) {
+    reservedHashValue = getReservedWordValue(lexem);
+    if (reservedHashValue == NULL) {
         return 0;
     }
 
     /* Lexem is reserved word */
-    if (strcmp(hashValue->lexem, lexem) == 0) {
-        return hashValue->type;
+    if (strcmp(reservedHashValue->lexem, lexem) == 0) {
+        return reservedHashValue->type;
     }
 
     /* Lexem is identifier */

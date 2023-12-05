@@ -8,7 +8,7 @@
 #define DFA_TRANSITIONS_COUNT 19
 #define TOKEN_MAX_LENGTH 26
 
-int lineCount;
+extern int lineCount;
 extern int currentState;
 extern int previousState;
 extern char currentChar;

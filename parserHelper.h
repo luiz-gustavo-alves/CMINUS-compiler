@@ -11,10 +11,10 @@ extern char *variableName;
 extern char *functionName;
 extern char *currentToken;
 
-int currentLine;
-int functionCurrentLine;
-int argsCount;
-int paramsCount;
+extern int currentLine;
+extern int functionCurrentLine;
+extern int argsCount;
+extern int paramsCount;
 
 int yylex();
 int yyerror(char *errorMsg);
