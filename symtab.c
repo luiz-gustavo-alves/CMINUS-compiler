@@ -6,11 +6,17 @@ symTable hashValue;
 
 int varCount = 1;
 
-int createHashKey(char * key) { 
-	int ascii = 0;
+int createHashKey(char * key) {
+    int salt[5] = {13, 17, 19, 23, 29};
+	long int ascii = 0;
+
     int i = 0;
     while (key[i] != '\0') {
-        ascii += (int) key[i];
+        if (i < 5) {
+            ascii += (int) key[i] * salt[i];
+        } else {
+            ascii += (int) key[i];
+        }
         i++;
     }
     return ascii % HASHTABLE_LEN;
@@ -113,7 +119,7 @@ int checkScope(char *name, char *scope) {
 void getIdType(char *name, char *scope, primitiveType *type) {
     hashValue = getHashValue(name);
     while ((hashValue != NULL)) {
-        if ((strcmp(hashValue->name, name) == 0) || strcmp(hashValue->scope, scope) == 0) {
+        if ((strcmp(hashValue->name, name) == 0)) {
             break;
         }
         hashValue = hashValue->next;

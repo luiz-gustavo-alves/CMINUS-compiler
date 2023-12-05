@@ -4,7 +4,7 @@
 #include "utils.h"
 #include "syntaxTree.h"
 
-#define HASHTABLE_LEN 241
+#define HASHTABLE_LEN 499
 
 typedef enum { isFunc, isVar } idType;
 
@@ -23,7 +23,7 @@ typedef struct symTable {
     idType id;
 } *symTable;
 
-static symTable hashtable[HASHTABLE_LEN];
+symTable hashtable[HASHTABLE_LEN];
 
 symTable getHashValue(char *name);
 int createHashKey(char *key);
