@@ -9,8 +9,6 @@ typedef enum { decl, exp, stmt } nodeType;
 typedef enum { declFunc, declVar, declIdType } declType;
 typedef enum { expId, expNum, expOp } expType;
 typedef enum { stmtAttrib, stmtFunc, stmtIf, stmtReturn, stmtWhile } stmtType;
-
-typedef enum { plus, minus, mult, slash, assign, lt, gt, lte, gte, dif, equal } opType;
 typedef enum { Array, Boolean, Integer, Void } primitiveType;
 
 typedef struct treeNode {
@@ -18,13 +16,13 @@ typedef struct treeNode {
     struct treeNode *sibling;
 
     int line;
-    int params;
+    int params; 
     int args;
     nodeType node;
     primitiveType type;
 
     union { declType decl; expType exp; stmtType stmt; } nodeSubType;
-    union { char *name; int value; opType op; } key;
+    union { char *name; int value; int op; } key;
 } treeNode;
 
 treeNode *syntaxTree;
