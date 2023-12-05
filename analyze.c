@@ -226,10 +226,6 @@ void semanticAnalysis(treeNode *tree) {
 int throwSemanticError(treeNode *tree, char *msg) {
 
 	semanticError = 1;
-    if (tree->node != exp && tree->subType.exp != expId) {
-        printf("(!) ERRO SEMANTICO | LINHA %d: %s\n", tree->line, msg);
-	} else {
-		printf("(!) ERRO SEMANTICO: %s | LINHA %d: %s\n", tree->key.name, tree->line, msg);
-	}
+    printf("(!) ERRO SEMANTICO: %s | LINHA %d:\n", msg, tree->line);
     return semanticError;
 }

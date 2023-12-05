@@ -183,14 +183,18 @@ token lexicalAnalysis() {
 					return token;
 
 				} else if (!isSpecialChar(currentChar)) {
-					printf("(!) ERRO LEXICO: Lexema: %s | Linha: %d", lexem, lineCount);
+					printf("(!) ERRO LEXICO: Lexema: %c | Linha: %d", currentChar, lineCount);
 					return errTk;
 				}
 			}
 
 			/* Invalid state (Lexical Error) */
 			if (currentState == -1) {
-				printf("(!) ERRO LEXICO: Lexema: %s | Linha: %d", lexem, lineCount);
+				if (isLetterChar(currentChar) || isDigitChar(currentChar)) {
+					printf("(!) ERRO LEXICO: Lexema: %s | Linha: %d", lexem, lineCount);
+				} else {
+					printf("(!) ERRO LEXICO: Lexema: %c | Linha: %d", currentChar, lineCount);
+				}
 				return errTk;
 			}
 		}
@@ -214,7 +218,11 @@ token lexicalAnalysis() {
 	}
 
 	if (currentState == -1) {
-		printf("(!) ERRO LEXICO: Lexema: %s | Linha: %d", lexem, lineCount);
+		if (isLetterChar(currentChar) || isDigitChar(currentChar)) {
+			printf("(!) ERRO LEXICO: Lexema: %s | Linha: %d", lexem, lineCount);
+		} else {
+			printf("(!) ERRO LEXICO: Lexema: %c | Linha: %d", currentChar, lineCount);
+		}
 		return errTk;
 	}
 
