@@ -171,8 +171,6 @@ treeNode *createActivationFunc(stmtType stmtFunc, treeNode *arguments, callList 
     activationFuncNode->child[1] = arguments; 
     activationFuncNode->key.name = getLastNodeCallList(list);
     activationFuncNode->args = argsCount;
-    printf("%s %d\n", activationFuncNode->key.name, argsCount);
-
     return activationFuncNode;
 }
 
