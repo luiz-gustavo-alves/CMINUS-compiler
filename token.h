@@ -1,10 +1,8 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
-typedef struct token {
-    int type;
-    int line;
-} token;
+#define RESERVED_HASHTABLE_LEN 499
+#define MAX_RESERVED_WORDS 6
 
 #define TOKEN_IF 1
 #define TOKEN_INT 2
@@ -38,5 +36,20 @@ static char *tokenNames[2][27] = {
   {"if", "int", "return", "void", "else", "while", "+", "-", "*", "/", "=", "==", "<", ">", "<=", ">=", "!=", ";", ",", "(", ")", "[", "]", "{", "}", "ID", "NUM"},
   {"IF", "INT", "RETURN", "VOID", "ELSE", "WHILE", "PLUS", "MINUS", "PLUS", "SLASH", "ASSIGN", "EQUAL", "LT", "GT", "LTE", "GTE", "DIF", "SEMICOLON", "COMMA", "OPARENT", "CPARENT", "OBRACKET", "CBRACKET", "OKEY", "CKEY", "IDENTIFIER", "NUMBER"},
 };
+
+typedef struct token {
+    int type;
+    int line;
+} token;
+
+typedef struct reservedWords {
+    int type;
+    char *lexem;
+} *reservedWords;
+
+reservedWords reservedWordsHash[RESERVED_HASHTABLE_LEN];
+
+void initializeReservedWordsHash();
+int isReservedWord(char *lexem);
 
 #endif

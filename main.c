@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "token.h"
 #include "syntaxTree.h"
 #include "parserHelper.h"
 #include "scanner.h"
@@ -9,14 +10,12 @@ void initializeGlobals() {
 	memset(lexem, 0, sizeof(TOKEN_MAX_LENGTH));
 	memset(tokenID, 0, sizeof(TOKEN_MAX_LENGTH));
 	memset(tokenNUM, 0, sizeof(TOKEN_MAX_LENGTH));
+	initializeReservedWordsHash();
 
  	lineCount = 1;
 	lexicalError = 0;
 	syntaxError = 0;
 	semanticError = 0;
-
-	currentLine = 1;
-	functionCurrentLine = 1;
 }
 
 int main(int argc, char *argv[]) {
