@@ -27,7 +27,7 @@ typedef struct symTable {
     funcType func;
 } *symTable;
 
-symTable hashtable[HASHTABLE_LEN];
+extern symTable hashtable[HASHTABLE_LEN];
 
 symTable getHashValue(char *name);
 int createHashKey(char *key);

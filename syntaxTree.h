@@ -25,7 +25,7 @@ typedef struct treeNode {
     union { char *name; int value; int op; } key;
 } treeNode;
 
-treeNode *syntaxTree;
+extern treeNode *syntaxTree;
 
 void printSyntaxTree(treeNode *tree);
 treeNode *parse();

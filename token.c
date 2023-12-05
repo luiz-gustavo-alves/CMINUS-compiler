@@ -4,6 +4,13 @@
 int hashKey;
 reservedWords hashValue;
 
+char *tokenNames[2][27] = {
+  {"if", "int", "return", "void", "else", "while", "+", "-", "*", "/", "=", "==", "<", ">", "<=", ">=", "!=", ";", ",", "(", ")", "[", "]", "{", "}", "ID", "NUM"},
+  {"IF", "INT", "RETURN", "VOID", "ELSE", "WHILE", "PLUS", "MINUS", "PLUS", "SLASH", "ASSIGN", "EQUAL", "LT", "GT", "LTE", "GTE", "DIF", "SEMICOLON", "COMMA", "OPARENT", "CPARENT", "OBRACKET", "CBRACKET", "OKEY", "CKEY", "IDENTIFIER", "NUMBER"},
+};
+
+reservedWords reservedWordsHash[RESERVED_HASHTABLE_LEN];
+
 int getHashKey(char *key) {
     int salt[5] = {13, 17, 19, 23, 29};
 	long int ascii = 0;

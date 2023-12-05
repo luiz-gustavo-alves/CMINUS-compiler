@@ -6,10 +6,10 @@
 #define YYPARSER
 #define YYSTYPE treeNode*
 
-char *expName;
-char *variableName;
-char *functionName;
-char *currentToken;
+extern char *expName;
+extern char *variableName;
+extern char *functionName;
+extern char *currentToken;
 
 int currentLine;
 int functionCurrentLine;

@@ -1,9 +1,9 @@
 #include "symtab.h"
 #include "analyze.h"
 
-int hashKey;
+symTable hashtable[HASHTABLE_LEN];
 symTable hashValue;
-
+int hashKey;
 int varCount = 1;
 
 int createHashKey(char * key) {

@@ -32,10 +32,7 @@
 #define TOKEN_IDENTIFIER 26
 #define TOKEN_NUMBER 27
 
-static char *tokenNames[2][27] = {
-  {"if", "int", "return", "void", "else", "while", "+", "-", "*", "/", "=", "==", "<", ">", "<=", ">=", "!=", ";", ",", "(", ")", "[", "]", "{", "}", "ID", "NUM"},
-  {"IF", "INT", "RETURN", "VOID", "ELSE", "WHILE", "PLUS", "MINUS", "PLUS", "SLASH", "ASSIGN", "EQUAL", "LT", "GT", "LTE", "GTE", "DIF", "SEMICOLON", "COMMA", "OPARENT", "CPARENT", "OBRACKET", "CBRACKET", "OKEY", "CKEY", "IDENTIFIER", "NUMBER"},
-};
+extern char *tokenNames[2][27];
 
 typedef struct token {
     int type;
@@ -47,7 +44,7 @@ typedef struct reservedWords {
     char *lexem;
 } *reservedWords;
 
-reservedWords reservedWordsHash[RESERVED_HASHTABLE_LEN];
+extern reservedWords reservedWordsHash[RESERVED_HASHTABLE_LEN];
 
 void initializeReservedWordsHash();
 int isReservedWord(char *lexem);

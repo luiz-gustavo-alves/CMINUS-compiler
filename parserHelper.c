@@ -3,6 +3,11 @@
 #include "scanner.h"
 #include "token.h"
 
+char *expName;
+char *variableName;
+char *functionName;
+char *currentToken;
+
 treeNode *createNode() {
     treeNode *newNode = (treeNode*) malloc(sizeof(treeNode));
     int i;

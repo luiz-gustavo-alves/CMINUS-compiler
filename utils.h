@@ -8,8 +8,8 @@
 
 FILE *file;
 
-int lexicalError;
-int syntaxError;
-int semanticError;
+extern int lexicalError;
+extern int syntaxError;
+extern int semanticError;
 
 #endif /* UTILS_H */

@@ -13,9 +13,6 @@ void initializeGlobals() {
 	initializeReservedWordsHash();
 
  	lineCount = 1;
-	lexicalError = 0;
-	syntaxError = 0;
-	semanticError = 0;
 }
 
 int main(int argc, char *argv[]) {

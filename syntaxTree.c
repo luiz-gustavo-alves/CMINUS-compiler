@@ -2,6 +2,7 @@
 #include "token.h"
 
 int treeSize = 0;
+treeNode *syntaxTree;
 
 void printSyntaxTree(treeNode *tree) { 
 
