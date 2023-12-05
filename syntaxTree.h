@@ -18,10 +18,12 @@ typedef struct treeNode {
     struct treeNode *sibling;
 
     int line;
+    int params;
+    int args;
     nodeType node;
     primitiveType type;
 
-    union { declType decl; expType exp; stmtType stmt; } subType;
+    union { declType decl; expType exp; stmtType stmt; } nodeSubType;
     union { char *name; int value; opType op; } key;
 } treeNode;
 

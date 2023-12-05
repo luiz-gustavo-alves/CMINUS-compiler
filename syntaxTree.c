@@ -14,7 +14,7 @@ void printSyntaxTree(treeNode *tree) {
 
         if (tree->node == exp) {
 
-            switch (tree->subType.exp) {
+            switch (tree->nodeSubType.exp) {
                 case expNum: printf("NUM: %d\n", tree->key.value); break;
 
                 case expId:
@@ -30,7 +30,7 @@ void printSyntaxTree(treeNode *tree) {
             }
         } else if (tree->node == stmt) { 
 
-			switch (tree->subType.stmt) {
+			switch (tree->nodeSubType.stmt) {
                 case stmtIf: printf("if \n"); break;
                 case stmtWhile: printf("while \n"); break;
                 case stmtAttrib: printf("ASSIGN \n"); break;
@@ -40,7 +40,7 @@ void printSyntaxTree(treeNode *tree) {
             }
         } else if (tree->node == decl) {
 
-			switch(tree->subType.decl) {
+			switch(tree->nodeSubType.decl) {
                 case declFunc: printf("Function Declaration: %s\n", tree->key.name); break;
                 case declVar: printf("Variable Declaration: %s\n", tree->key.name); break;
                 case declIdType:

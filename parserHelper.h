@@ -13,6 +13,8 @@ char *currentToken;
 
 int currentLine;
 int functionCurrentLine;
+int argsCount;
+int paramsCount;
 
 int yylex();
 int yyerror(char *errorMsg);

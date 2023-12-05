@@ -17,21 +17,21 @@ treeNode *createNode() {
 treeNode *createDeclNode(declType node) {
     treeNode *newNode = createNode();
     newNode->node = decl;
-    newNode->subType.decl = node;
+    newNode->nodeSubType.decl = node;
     return newNode;
 }
 
 treeNode *createStmtNode(stmtType node) {
     treeNode *newNode = createNode();
     newNode->node = stmt;
-    newNode->subType.stmt = node;
+    newNode->nodeSubType.stmt = node;
     return newNode;
 }
 
 treeNode *createExpNode(expType node) {
     treeNode *newNode = createNode();
     newNode->node = exp;
-    newNode->subType.exp = node;
+    newNode->nodeSubType.exp = node;
     return newNode;
 }
 
@@ -83,7 +83,8 @@ treeNode *createDeclFuncNode(declType declFunc, treeNode *expType, treeNode *par
     declFuncNode->key.name = functionName;
     declFuncNode->line = functionCurrentLine;
     declFuncNode->type = expType->type;
-                
+    declFuncNode->params = paramsCount;
+
     expType->child[0] = declFuncNode;
     return expType;
 }
@@ -169,6 +170,9 @@ treeNode *createActivationFunc(stmtType stmtFunc, treeNode *arguments, callList 
     treeNode *activationFuncNode = createStmtNode(stmtFunc);
     activationFuncNode->child[1] = arguments; 
     activationFuncNode->key.name = getLastNodeCallList(list);
+    activationFuncNode->args = argsCount;
+    printf("%s %d\n", activationFuncNode->key.name, argsCount);
+
     return activationFuncNode;
 }
 

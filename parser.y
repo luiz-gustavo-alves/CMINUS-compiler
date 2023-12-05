@@ -70,15 +70,15 @@ func_decl : exp_type IDENTIFIER {
                 functionName = getTokenName(tokenID);
                 functionCurrentLine = lineCount;
               }
-              OPARENT params CPARENT bloc_decl { $$ = createDeclFuncNode(declFunc, $1, $5, $7); };
+              OPARENT params CPARENT bloc_decl { $$ = createDeclFuncNode(declFunc, $1, $5, $7); paramsCount = 0; };
 
 params :  list_params { $$ = $1; } 
 		      | 
           VOID { $$ = createEmptyParams(expId); };
 
-list_params : list_params COMMA arg { $$ = traversal($1, $3); }
+list_params : list_params COMMA arg { paramsCount++; $$ = traversal($1, $3); }
 			        | 
-              arg { $$ = $1; };
+              arg { paramsCount++; $$ = $1; };
 
 arg :   exp_type IDENTIFIER { expName = getTokenName(tokenID); $$ = createDeclVarNode(declVar, $1); } 
         | 
@@ -172,17 +172,17 @@ factor :  OPARENT exp CPARENT { $$ = $1; }
 activate : IDENTIFIER {
             insertNodeCallList(&list, getTokenName(tokenID));
           }
-          OPARENT arguments CPARENT { $$ = createActivationFunc(stmtFunc, $4, &list); };
+          OPARENT arguments CPARENT { $$ = createActivationFunc(stmtFunc, $4, &list); argsCount = 0; };
 
 arguments :   list_arg { $$ = $1; }
               |
               { $$ = NULL; };
 
-list_arg :  list_arg COMMA exp { $$ = traversal($1, $3); }
+list_arg :  list_arg COMMA exp { argsCount++; $$ = traversal($1, $3); }
 			      | 
-            arg { $$ = $1; } 
+            arg {  argsCount++;  $$ = $1; } 
 			      | 
-            exp { $$ = $1; };
+            exp { argsCount++;  $$ = $1; };
 
 %%
 
@@ -207,6 +207,8 @@ treeNode *parse() {
   initCallList(&list);
   currentLine = 1;
 	functionCurrentLine = 1;
+  argsCount = 0;
+  paramsCount = 0;
 
 	yyparse(); 
 	return tree; 

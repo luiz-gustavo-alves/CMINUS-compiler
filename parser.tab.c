@@ -1469,7 +1469,7 @@ yyreduce:
 
   case 12:
 #line 73 "parser.y"
-                                               { yyval = createDeclFuncNode(declFunc, yyvsp[-6], yyvsp[-2], yyvsp[0]); }
+                                               { yyval = createDeclFuncNode(declFunc, yyvsp[-6], yyvsp[-2], yyvsp[0]); paramsCount = 0; }
 #line 1474 "parser.tab.c"
     break;
 
@@ -1487,13 +1487,13 @@ yyreduce:
 
   case 15:
 #line 79 "parser.y"
-                                    { yyval = traversal(yyvsp[-2], yyvsp[0]); }
+                                    { paramsCount++; yyval = traversal(yyvsp[-2], yyvsp[0]); }
 #line 1492 "parser.tab.c"
     break;
 
   case 16:
 #line 81 "parser.y"
-                  { yyval = yyvsp[0]; }
+                  { paramsCount++; yyval = yyvsp[0]; }
 #line 1498 "parser.tab.c"
     break;
 
@@ -1773,7 +1773,7 @@ yyreduce:
 
   case 62:
 #line 175 "parser.y"
-                                    { yyval = createActivationFunc(stmtFunc, yyvsp[-1], &list); }
+                                    { yyval = createActivationFunc(stmtFunc, yyvsp[-1], &list); argsCount = 0; }
 #line 1778 "parser.tab.c"
     break;
 
@@ -1791,19 +1791,19 @@ yyreduce:
 
   case 65:
 #line 181 "parser.y"
-                               { yyval = traversal(yyvsp[-2], yyvsp[0]); }
+                               { argsCount++; yyval = traversal(yyvsp[-2], yyvsp[0]); }
 #line 1796 "parser.tab.c"
     break;
 
   case 66:
 #line 183 "parser.y"
-                { yyval = yyvsp[0]; }
+                {  argsCount++;  yyval = yyvsp[0]; }
 #line 1802 "parser.tab.c"
     break;
 
   case 67:
 #line 185 "parser.y"
-                { yyval = yyvsp[0]; }
+                { argsCount++;  yyval = yyvsp[0]; }
 #line 1808 "parser.tab.c"
     break;
 
@@ -2064,6 +2064,8 @@ treeNode *parse() {
   initCallList(&list);
   currentLine = 1;
 	functionCurrentLine = 1;
+  argsCount = 0;
+  paramsCount = 0;
 
 	yyparse(); 
 	return tree; 

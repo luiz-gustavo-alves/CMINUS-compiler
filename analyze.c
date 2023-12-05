@@ -20,7 +20,7 @@ int validateDeclFunc(treeNode *tree) {
 
 	int funcDeclared = checkIdDeclaration(tree->key.name);
 	if (!funcDeclared) {
-		insertFuncSymtable(tree->key.name, tree->line, tree->type);
+		insertFuncSymtable(tree->key.name, tree->line, tree->type, isDeclFunc, tree->params);
 		currentScope = tree->key.name;
 	} else {
 		int funcIsNotVar = checkVarIsFunc(tree->key.name);
@@ -51,8 +51,8 @@ int validateDeclVar(treeNode *tree) {
 	if (!varDeclared) {
 		insertVarSymtable(tree->key.name, tree->line, currentScope, tree->type);
 	} else {
-		int varNotInCurrentScope = checkScope(tree->key.name, currentScope);
-		if (!varNotInCurrentScope) {
+		int varDeclaredInScope = checkScope(tree->key.name, currentScope);
+		if (!varDeclaredInScope) {
             insertVarSymtable(tree->key.name, tree->line, currentScope, tree->type);
         } else {
 			return throwSemanticError(tree, "Variavel ja declarada.");
@@ -64,9 +64,15 @@ int validateStmtFunc(treeNode *tree, primitiveType *type) {
 
 	int isReservedFunc = 0;
 	if (strcmp(tree->key.name, "input") == 0) {
+		if (tree->args != 0) {
+			return throwSemanticError(tree, "Quantidade invalida de argumentos da funcao input");
+		}
 		tree->type = Integer; 
 		isReservedFunc = 1;
 	} else if (strcmp(tree->key.name, "output") == 0) {
+		if (tree->args != 1) {
+			return throwSemanticError(tree, "Quantidade invalida de argumentos da funcao output");
+		}
 		tree->type = Void;
 		isReservedFunc = 1;
 	}
@@ -79,9 +85,15 @@ int validateStmtFunc(treeNode *tree, primitiveType *type) {
 	if (!funcDeclared) { 
 		return throwSemanticError(tree, "Funcao nao declarada.");
 	} else {
+		int paramsCount = getFuncParamsCount(tree->key.name);
+		if (paramsCount != tree->args) {
+			char msg[] = {"Quantidade invalida de argumentos da funcao "};
+			strcat(msg, tree->key.name);
+			return throwSemanticError(tree, msg);
+		}
 		getIdType(tree->key.name, currentScope, type);
 		tree->type = *type;
-		insertFuncSymtable(tree->key.name, tree->line, tree->type);
+		insertFuncSymtable(tree->key.name, tree->line, tree->type, isCallFunc, tree->args);
 	}
 }
 
@@ -93,7 +105,7 @@ int validateExpId(treeNode *tree, primitiveType *type) {
 
 	int varDeclared = checkIdDeclaration(tree->key.name);
 	if (!varDeclared) {
-		return throwSemanticError(tree, "Variavel nao declarada");
+		return throwSemanticError(tree, "Variavel nao declarada.");
 	}
 
 	int isLocalVarScope = checkScope(tree->key.name, currentScope);
@@ -123,14 +135,14 @@ void checkNodesDeclaration(treeNode *tree) {
 		primitiveType *type = (primitiveType*) malloc(sizeof(primitiveType));
 
 	    if (tree->node == decl) {
-			switch (tree->subType.decl) { 
+			switch (tree->nodeSubType.decl) { 
 				case declFunc: validateDeclFunc(tree); break;
 				case declVar: validateDeclVar(tree); break;
 	            default: break;
             }
-        } else if (tree->node == exp && tree->subType.exp == expId) {
+        } else if (tree->node == exp && tree->nodeSubType.exp == expId) {
 			validateExpId(tree, type);
-	    } else if (tree->node == stmt && tree->subType.stmt == stmtFunc) {
+	    } else if (tree->node == stmt && tree->nodeSubType.stmt == stmtFunc) {
 			validateStmtFunc(tree, type);
 		}
 	    free(type);
@@ -143,7 +155,7 @@ int isBooleanOp(treeNode *tree) {
 
 int validateExpOp(treeNode *tree) {
 	if ((tree->child[0]->type != Integer) || (tree->child[1]->type != Integer)) {
-		return throwSemanticError(tree, " Operacao entre tipos que nao sao INT.");
+		return throwSemanticError(tree, "Operacao entre tipos que nao sao INT.");
 	}
 
 	if (isBooleanOp(tree)) {
@@ -173,10 +185,10 @@ int validateStmtAttrib(treeNode *tree) {
 
 void checkNodesTypes(treeNode *tree) {
 
-	if (tree->node == exp && tree->subType.exp == expOp) {
+	if (tree->node == exp && tree->nodeSubType.exp == expOp) {
 		validateExpOp(tree);
 	} else if (tree->node == stmt) {
-		switch (tree->subType.stmt) {
+		switch (tree->nodeSubType.stmt) {
 			case stmtIf: validateStmtIf(tree); break;
 			case stmtAttrib: validateStmtAttrib(tree); break;
 			case stmtWhile: validateStmtWhile(tree); break;
@@ -226,6 +238,6 @@ void semanticAnalysis(treeNode *tree) {
 int throwSemanticError(treeNode *tree, char *msg) {
 
 	semanticError = 1;
-    printf("(!) ERRO SEMANTICO: %s | LINHA %d:\n", msg, tree->line);
+    printf("(!) ERRO SEMANTICO: %s | LINHA %d\n", msg, tree->line);
     return semanticError;
 }

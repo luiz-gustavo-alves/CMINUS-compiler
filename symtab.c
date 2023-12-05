@@ -47,7 +47,7 @@ void insertNewHashLines(int line) {
     hashLines->next->next = NULL;
 }
 
-void insertFuncSymtable(char *name, int line, primitiveType type) {
+void insertFuncSymtable(char *name, int line, primitiveType type, funcType funcType, int paramsOrArgsCount) {
 
 	hashValue = getHashValue(name);
     if (hashValue != NULL) {
@@ -58,6 +58,12 @@ void insertFuncSymtable(char *name, int line, primitiveType type) {
         hashValue->type = type;
         hashValue->id = isFunc;
         hashValue->scope = "global";
+
+        if (funcType == isDeclFunc) {
+            hashValue->params = paramsOrArgsCount;
+        } else {
+            hashValue->args = paramsOrArgsCount;
+        }
         createHashValue(line);
     }
 }
@@ -76,20 +82,24 @@ void insertVarSymtable(char *name, int line, char *scope, primitiveType type) {
         hashValue->name = name;
         hashValue->type = type;
         hashValue->id = isVar;
+        hashValue->idNumber = varCount;
+        varCount++;
 
         /* Check variable scope (global or function scope) */
         if (strcmp(scope, "global") == 1) {
-            char* scope_global = malloc(sizeof(char));
-            strcat(scope_global, "global");
-            hashValue->scope = scope_global;
+            char* globalScope = malloc(sizeof(char));
+            strcat(globalScope, "global");
+            hashValue->scope = globalScope;
         } else {
             hashValue->scope = scope;
         }
-
-        hashValue->idNumber = varCount;
-        varCount++;
         createHashValue(line);
     }
+}
+
+int getFuncParamsCount(char *name) {
+    hashValue = getHashValue(name);
+    return hashValue->params;
 }
 
 int checkVarIsFunc(char *name) {
@@ -142,7 +152,7 @@ char *getPrimitiveType(primitiveType type) {
 void printSymtable() {
     
 	printf(" |-----------------------------------------------------------------------------------------------------------------------\n");
-    printf(" |   Nome            |  ID  |  Tipo Dado |  Tipo ID  |   Escopo            |   Linhas  	      \n");
+    printf(" |   Nome            |  ID  |  Tipo ID  | Tipo Dado  |  Params |   Escopo            |   Linhas  	      \n");
     printf(" |-----------------------------------------------------------------------------------------------------------------------\n");
 
 	int i;
@@ -161,13 +171,16 @@ void printSymtable() {
                     printf(" |  %-1d ", hashValue->idNumber);
                 }
 
+                printf(" |  %-7s ", getPrimitiveType(hashValue->type));
+
                 if (hashValue->id == isVar) {
                     printf(" |  %-7s  ", "Var");
+                    printf(" | %6d ", 0);
                 } else {
                     printf(" |  %-7s  ", "Func");
+                    printf(" | %6d ", hashValue->params);
                 }
 
-                printf(" |  %-7s ", getPrimitiveType(hashValue->type));
                 printf(" |  %-17s  | ", hashValue->scope);
 
                 while (hashLines != NULL) { 
