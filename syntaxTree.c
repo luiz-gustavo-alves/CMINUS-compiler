@@ -24,7 +24,7 @@ void printSyntaxTree(treeNode *tree) {
                     break;
 
                 case expOp:
-                    printf("OPERATOR: %s \n", tokenNames[1][tree->key.op - 1]);
+                    printf("OPERATOR: %s \n", tokenNames[0][tree->key.op - 1]);
                     break;
 
                 default: printf("INVALID EXPRESION");
