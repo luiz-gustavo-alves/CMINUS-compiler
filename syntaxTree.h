@@ -28,6 +28,7 @@ typedef struct treeNode {
 extern treeNode *syntaxTree;
 
 void printSyntaxTree(treeNode *tree);
+void printTreeNode(treeNode *tree);
 treeNode *parse();
 
 #endif
